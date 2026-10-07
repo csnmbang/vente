@@ -44,6 +44,29 @@ traffic is mobile, arriving from a link in a TikTok bio.
   `hola@vengavente.com` is forwarded via ImprovMX.
 - Deploy target: Vercel free tier.
 
+## Implementation notes
+
+- **Demo mode:** without `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`, the
+  store (`src/lib/store/`) runs in memory with fake seeded sign-ups. It
+  refuses to start on Vercel production. Every data access goes through the
+  `Store` interface, so add new queries to both implementations.
+- Schema changes: add a new numbered file in `supabase/migrations/` (pasted
+  into the Supabase SQL editor by hand). Validate SQL locally with PGlite if
+  there's no Postgres.
+- Region: Supabase Frankfurt, Vercel functions `fra1` (`vercel.json`),
+  Resend EU. Keep them together.
+- CSS: component classes (`.btn`, `.card`, `.input`) live in a custom
+  `vente` cascade layer declared below `utilities` in `globals.css`, because
+  the pipeline strips `@layer components`. Keyframes go inside `@theme`.
+- MapLibre's worker is copied to `public/maplibre/` on `postinstall` and set
+  with `setWorkerUrl` (Turbopack can't bundle it).
+- Next 16 Cache Components: anything reading cookies, `Date.now()` or the DB
+  per request needs `<Suspense>` and/or `await connection()`.
+- Place data: `data/places.csv` (committed, from GeoNames via
+  `scripts/build-places.ts`); `npm run import:geo` loads it plus postcodes.
+- Copy tone: Spain Spanish, "tú", playful. Tuenti references should be real
+  Tuenti things (privados, etiquetas, estados), not Facebook ones.
+
 ## v1 base (built first)
 
 1. **Quiz** — 10 random questions from `src/content/questions.ts`, 5 s each,
