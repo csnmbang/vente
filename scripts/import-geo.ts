@@ -51,8 +51,17 @@ function parseCsvLine(line: string): string[] {
 
 async function upsert(table: string, rows: object[], onConflict: string) {
   for (let i = 0; i < rows.length; i += BATCH) {
-    const { error } = await db.from(table).upsert(rows.slice(i, i + BATCH), { onConflict });
-    if (error) throw new Error(`${table}: ${error.message}`);
+    // Retry: one dropped connection shouldn't stop a 400k-row import.
+    for (let attempt = 1; ; attempt++) {
+      try {
+        const { error } = await db.from(table).upsert(rows.slice(i, i + BATCH), { onConflict });
+        if (error) throw new Error(error.message);
+        break;
+      } catch (e) {
+        if (attempt >= 5) throw new Error(`${table}: ${e instanceof Error ? e.message : e}`);
+        await new Promise((r) => setTimeout(r, 2000 * attempt));
+      }
+    }
     process.stdout.write(`\r${table}: ${Math.min(i + BATCH, rows.length)}/${rows.length}`);
   }
   process.stdout.write("\n");
