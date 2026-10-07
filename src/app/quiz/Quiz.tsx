@@ -132,11 +132,8 @@ function QuestionCard({
       <div className="mt-3 h-3 overflow-hidden rounded-full border-2 border-tinta bg-white">
         <div
           key={q.index}
-          className="h-full origin-left bg-rojo"
-          style={{
-            animation: locked ? "none" : `countdown ${q.seconds}s linear forwards`,
-            transform: locked ? "scaleX(0)" : undefined,
-          }}
+          className={`h-full origin-left bg-rojo ${locked ? "scale-x-0" : "animate-countdown"}`}
+          style={{ animationDuration: `${q.seconds}s` }}
         />
       </div>
 

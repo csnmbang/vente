@@ -1,0 +1,137 @@
+import type { Metadata } from "next";
+import { connection } from "next/server";
+import { cookies } from "next/headers";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { DEMO, EMAIL_ENABLED, QUIZ } from "@/lib/config";
+import { verify } from "@/lib/crypto";
+import { PASS_COOKIE, questionText, QUIZ_COOKIE } from "@/lib/quiz";
+import { store } from "@/lib/store";
+import { verdict } from "@/lib/verdict";
+import ShareButton from "./ShareButton";
+import SignupForm from "./SignupForm";
+
+const UUID = /^[0-9a-f-]{36}$/i;
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/resultado/[id]">): Promise<Metadata> {
+  const { id } = await params;
+  const attempt = UUID.test(id) ? await store().getAttempt(id) : null;
+  if (!attempt || attempt.status === "in_progress") return { title: "Vente" };
+  const title = `He sacado ${attempt.correct_count}/10 en Vente`;
+  return {
+    title,
+    description: "¿Y tú, eres de aquí de verdad? Demuéstralo en 10 preguntas.",
+    openGraph: { title, description: "¿Y tú? Vente pa'cá 🇪🇸" },
+  };
+}
+
+export default function ResultPage({ params }: PageProps<"/resultado/[id]">) {
+  return (
+    <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 pb-10 pt-5">
+      <Suspense fallback={<div className="card h-[26rem] animate-pulse bg-rojo/40" />}>
+        <Result params={params} />
+      </Suspense>
+    </main>
+  );
+}
+
+async function Result({ params }: { params: Promise<{ id: string }> }) {
+  await connection(); // per-request: reads cookies and checks token expiry
+  const { id } = await params;
+  if (!UUID.test(id)) notFound();
+  const attempt = await store().getAttempt(id);
+  if (!attempt || attempt.status === "in_progress") notFound();
+
+  const jar = await cookies();
+  const isOwner = verify<{ id: string }>(jar.get(QUIZ_COOKIE)?.value, "quiz")?.id === id;
+  const pass = verify<{ id: string }>(jar.get(PASS_COOKIE)?.value, "pass");
+  const canSignUp = isOwner && attempt.status === "passed" && !attempt.signup_used && pass?.id === id;
+
+  const score = attempt.correct_count;
+  const v = verdict(score);
+  const missed = attempt.question_ids.filter((_, i) => !attempt.results[i]);
+
+  return (
+    <>
+      {/* The bit people screenshot. */}
+      <section className="card relative overflow-hidden bg-rojo p-6 text-white">
+        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-amarillo opacity-90" />
+        <p className="relative font-display text-xl font-extrabold">Vente</p>
+        <p className="relative mt-8 text-lg font-bold">He sacado</p>
+        <p className="relative font-display text-[7.5rem] font-extrabold leading-none tracking-tight">
+          {score}
+          <span className="text-5xl opacity-80">/10</span>
+        </p>
+        <p className="relative mt-2 text-2xl font-extrabold leading-tight">
+          {v.line} {v.emoji}
+        </p>
+        <div className="relative mt-8 flex items-end justify-between">
+          <p className="font-display text-2xl font-extrabold text-amarillo">Vente pa&apos;cá</p>
+          <p className="text-sm font-bold opacity-90">vengavente.com</p>
+        </div>
+      </section>
+
+      <ShareButton score={score} />
+
+      {isOwner && missed.length > 0 && (
+        <section className="mt-6">
+          <h2 className="font-display text-xl font-extrabold">
+            Las que se te escaparon ({missed.length})
+          </h2>
+          <p className="text-sm text-gris">La respuesta no te la decimos, que luego se chiva todo el mundo 🤐</p>
+          <ul className="mt-3 space-y-2">
+            {missed.map((qid) => (
+              <li key={qid} className="rounded-xl border-2 border-tinta bg-white px-4 py-3">
+                {questionText(qid)}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {canSignUp && (
+        <section className="card mt-8 p-5">
+          <h2 className="font-display text-2xl font-extrabold">¡Estás dentro! 🎉</h2>
+          <p className="mt-1 text-gris">
+            Ponte en el mapa para que los demás vean que aquí también hay españoles. Solo
+            guardamos tu correo y tu zona, nunca tu dirección.
+          </p>
+          <SignupForm emailEnabled={EMAIL_ENABLED} demo={DEMO} />
+        </section>
+      )}
+
+      {isOwner && attempt.status === "passed" && !canSignUp && (
+        <p className="mt-8 rounded-xl bg-amarillo p-4 font-bold">
+          {attempt.signup_used
+            ? "Ya te apuntaste con este test. ¡Gracias! 💛"
+            : "Se te pasó el rato para apuntarte. Repite el test y esta vez no te entretengas 😜"}
+        </p>
+      )}
+
+      {isOwner && attempt.status === "failed" && (
+        <div className="card mt-8 p-5">
+          <p className="font-bold">
+            Necesitas {QUIZ.passMark} de 10 para entrar. Si eres de aquí, seguro que fueron los
+            nervios. Tienes unos cuantos intentos al día.
+          </p>
+          <Link href="/quiz" className="btn btn-rojo mt-4 w-full">
+            Otra vez, que no vale 🔁
+          </Link>
+        </div>
+      )}
+
+      {!isOwner && (
+        <Link href="/quiz" className="btn btn-rojo mt-6 w-full">
+          ¿Y tú? Haz el test 🇪🇸
+        </Link>
+      )}
+
+      <Link href="/mapa" className="btn btn-blanco mt-4 w-full">
+        Ver el mapa 🗺️
+      </Link>
+    </>
+  );
+}

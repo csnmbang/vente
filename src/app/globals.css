@@ -1,3 +1,5 @@
+/* Our component classes sit below Tailwind utilities, so utilities win. */
+@layer theme, base, components, vente, utilities;
 @import "tailwindcss";
 
 :root {
@@ -20,6 +22,12 @@
   --color-azul-tuenti: var(--azul-tuenti);
   --color-gris: var(--gris);
   --font-display: var(--font-bricolage);
+
+  --animate-countdown: countdown 5s linear forwards;
+  @keyframes countdown {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+  }
 }
 
 html,
@@ -33,7 +41,7 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-@layer components {
+@layer vente {
 /* Chunky, thumb-friendly button used everywhere. */
 .btn {
   display: inline-flex;
@@ -86,9 +94,4 @@ body {
   outline: 3px solid var(--amarillo);
   outline-offset: 1px;
 }
-}
-
-@keyframes countdown {
-  from { transform: scaleX(1); }
-  to { transform: scaleX(0); }
 }
