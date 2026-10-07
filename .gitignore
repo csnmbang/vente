@@ -48,3 +48,6 @@ next-env.d.ts
 .idea/
 .vscode/
 .claude/settings.local.json
+
+# copied from node_modules on install
+/public/maplibre/
