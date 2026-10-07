@@ -3,15 +3,26 @@
 import { useState } from "react";
 import type { PlaceOption } from "@/app/api/places/route";
 import PlacePicker from "@/components/PlacePicker";
+import { contarPaisanos, PROVINCIAS, provinciasParaElegir } from "@/content/provincias";
 import { COMUNIDADES } from "@/content/rutas";
 import { haversineKm } from "@/lib/geo";
 import { distanciaEnRuta } from "@/lib/rutas";
-import { asComunidad, writeYo, type Yo } from "@/lib/yo";
+import { origen, writeYo, type Yo } from "@/lib/yo";
 
-type City = { name: string; lat: number; lng: number; people: number };
+type City = { name: string; lat: number; lng: number; people: number; provincias: Record<string, number> };
 
 // Closer than this to the reader's city centre counts as their own city.
 const MISMA_CIUDAD_KM = 3;
+
+/**
+ * People from the reader's province in a city, not counting the reader
+ * themselves when they signed up from this city.
+ */
+export function paisanosEn(yo: Yo | null, c: { lat: number; lng: number; provincias: Record<string, number> }): number {
+  if (!yo?.provincia) return 0;
+  const n = c.provincias[yo.provincia] ?? 0;
+  return yo.apuntado && haversineKm(yo, c) < MISMA_CIUDAD_KM ? Math.max(0, n - 1) : n;
+}
 
 /** "a un Alicante–Murcia de ti", or null for the reader's own city. */
 export function distanciaDesde(yo: Yo, p: { lat: number; lng: number }): string | null {
@@ -54,6 +65,14 @@ export default function YoPanel({
     .sort((a, b) => a.km - b.km)
     .slice(0, 3);
 
+  // Cities with people from your province, most first.
+  const conPaisanos = yo.provincia
+    ? cities
+        .map((c) => ({ name: c.name, n: paisanosEn(yo, c) }))
+        .filter((c) => c.n > 0)
+        .sort((a, b) => b.n - a.n)
+    : [];
+
   return (
     <div>
       <p>
@@ -71,13 +90,29 @@ export default function YoPanel({
           ))}
         </ul>
       )}
+      {yo.provincia && (
+        <p className="mt-1">
+          {conPaisanos.length > 0 ? (
+            <>
+              <span className="mr-1 inline-block h-3 w-3 rounded-full border-2 border-amarillo bg-rojo align-middle" />
+              {conPaisanos
+                .slice(0, 3)
+                .map((c) => `${contarPaisanos(yo.provincia!, c.n)} en ${c.name}`)
+                .join(", ")}
+              {conPaisanos.length > 3 && ` y en ${conPaisanos.length - 3} ciudades más`}
+            </>
+          ) : (
+            `Todavía no hay nadie de ${PROVINCIAS[yo.provincia]?.nombre ?? "tu provincia"} en el mapa.`
+          )}
+        </p>
+      )}
     </div>
   );
 }
 
 function ElegirCiudad({ onSave, onCancel }: { onSave: (yo: Yo) => void; onCancel: () => void }) {
   const [city, setCity] = useState<PlaceOption | null>(null);
-  const [region, setRegion] = useState("");
+  const [provincia, setProvincia] = useState("");
 
   return (
     <div className="space-y-3">
@@ -90,18 +125,26 @@ function ElegirCiudad({ onSave, onCancel }: { onSave: (yo: Yo) => void; onCancel
         dropUp
       />
       <div>
-        <label htmlFor="region" className="mb-1 block font-bold">
-          ¿De qué comunidad eres?
+        <label htmlFor="provincia" className="mb-1 block font-bold">
+          ¿De qué provincia eres?
         </label>
         <select
-          id="region"
+          id="provincia"
           className="input"
-          value={region}
-          onChange={(e) => setRegion(e.target.value)}
+          value={provincia}
+          onChange={(e) => setProvincia(e.target.value)}
         >
           <option value="">Prefiero no decirlo</option>
           {COMUNIDADES.map((c) => (
-            <option key={c}>{c}</option>
+            <optgroup key={c} label={c}>
+              {provinciasParaElegir()
+                .filter((p) => p.comunidad === c)
+                .map((p) => (
+                  <option key={p.clave} value={p.clave}>
+                    {p.nombre}
+                  </option>
+                ))}
+            </optgroup>
           ))}
         </select>
       </div>
@@ -113,7 +156,7 @@ function ElegirCiudad({ onSave, onCancel }: { onSave: (yo: Yo) => void; onCancel
         <button
           disabled={!city}
           onClick={() =>
-            city && onSave({ ciudad: city.name, lat: city.lat, lng: city.lng, region: asComunidad(region) })
+            city && onSave({ ciudad: city.name, lat: city.lat, lng: city.lng, ...origen(provincia) })
           }
           className="btn btn-rojo min-h-0 flex-1 py-2 text-base"
         >

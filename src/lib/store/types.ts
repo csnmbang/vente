@@ -62,6 +62,9 @@ export type CityCount = {
   people: number;
 };
 
+/** Confirmed sign-ups in a city whose hometown is in `provincia` (raw GeoNames admin2 name). */
+export type CityProvinceCount = { city_id: number; provincia: string; people: number };
+
 export type ZoneCount = {
   zone_id: string;
   label: string | null; // postcode, or null for "city centre" zones
@@ -98,4 +101,7 @@ export interface Store {
   // map
   cityCounts(): Promise<CityCount[]>;
   zoneCounts(): Promise<ZoneCount[]>;
+  cityProvinceCounts(): Promise<CityProvinceCount[]>;
+  /** Confirmed sign-ups from this province, anywhere. */
+  provinceTotal(provincia: string): Promise<number>;
 }

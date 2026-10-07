@@ -4,8 +4,16 @@ import Link from "next/link";
 import { useState } from "react";
 import type { PlaceOption } from "@/app/api/places/route";
 import PlacePicker from "@/components/PlacePicker";
+import { contarPaisanos, PROVINCIAS } from "@/content/provincias";
 
-type Done = { status: "check-email" | "confirmed"; email: string };
+type Paisanos = { provincia: string; otros: number };
+type Done = { status: "check-email" | "confirmed"; email: string; paisanos?: Paisanos };
+
+/** "Ya hay 14 murcianos en Vente." / "Eres la primera persona de Murcia en Vente." */
+function lineaPaisanos({ provincia, otros }: Paisanos): string {
+  if (otros > 0) return `Ya hay ${contarPaisanos(provincia, otros)} en Vente.`;
+  return `Eres la primera persona de ${PROVINCIAS[provincia]?.nombre ?? "tu provincia"} en Vente.`;
+}
 
 export default function SignupForm({ emailEnabled, demo }: { emailEnabled: boolean; demo: boolean }) {
   const [email, setEmail] = useState("");
@@ -38,7 +46,7 @@ export default function SignupForm({ emailEnabled, demo }: { emailEnabled: boole
       });
       const data = await res.json();
       if (!res.ok) return setError(data.error);
-      setDone({ status: data.status, email });
+      setDone({ status: data.status, email, paisanos: data.paisanos });
     } catch {
       setError("Se ha perdido la conexión. Vuelve a intentarlo.");
     } finally {
@@ -54,10 +62,12 @@ export default function SignupForm({ emailEnabled, demo }: { emailEnabled: boole
           Te hemos enviado un enlace a <strong>{done.email}</strong>. Al pulsarlo apareces en el
           mapa. Si no lo ves, revisa la carpeta de spam.
         </p>
+        {done.paisanos && <p className="mt-2 font-bold">{lineaPaisanos(done.paisanos)}</p>}
       </div>
     ) : (
       <div className="mt-5 rounded-xl bg-amarillo p-4">
         <p className="text-lg font-extrabold">Ya estás en el mapa</p>
+        {done.paisanos && <p className="mt-1 font-bold">{lineaPaisanos(done.paisanos)}</p>}
         <Link href="/mapa" className="btn btn-rojo mt-3 w-full">
           Ver el mapa
         </Link>

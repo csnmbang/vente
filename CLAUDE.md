@@ -86,7 +86,7 @@ traffic is mobile, arriving from a link in a TikTok bio.
 5. **Privacy page** (`/privacidad`) — what is stored and why, and how to
    request deletion.
 
-## Roadmap (in order, one at a time — originally "not in v1")
+## Roadmap (in order, one at a time; originally "not in v1")
 
 1. **Distances as Spanish routes** — never show a distance as a number; say
    "a un Alicante–Murcia de ti". Editable routes data file (two places in
@@ -103,20 +103,35 @@ traffic is mobile, arriving from a link in a TikTok bio.
    **Status: built.** Data in `src/content/rutas.ts` (125 routes, edit
    freely), logic in `src/lib/rutas.ts` (`distanciaEnRuta`), check with
    `npm run check:rutas`. Used in map popups and the "Tu ciudad" panel.
-2. **Hometown touches** — "3 murcianos en Dublín" when opening a city; after
-   sign-up, how many people from your region are already in.
+2. **Hometown emphasis** — highlight people from your own place, strongest
+   first: same pueblo, a pueblo within 15 km of yours ("de al lado", e.g.
+   San Javier and San Pedro del Pinatar), same provincia, everyone else.
+   Pueblo names are **members-only** (they can identify people), so before
+   accounts exist this works at provincia level only.
+   **Status: provincia level built.** Demonyms in `src/content/provincias.ts`
+   ("3 murcianos"). City popups list where people are from; cities with
+   people from your provincia get a yellow ring; after sign-up: "Ya hay 14
+   murcianos en Vente". View `city_province_counts` (migration 0002). The
+   pueblo and "de al lado" levels arrive with accounts (feature 3).
 3. **Accounts and vouching** — email-link sign-in (no passwords). Passing the
    quiz makes you "pendiente". You become "verificado" when two verified
    members vouch for you, or when you join through a verified member's invite
    link. Limited vouches per member; who vouched for whom is recorded. Admin
-   page to verify the first members by hand and to remove people.
+   page to verify the first members by hand and to remove people. Also turns
+   on pueblo-level emphasis for verified members.
 4. **Individual dots, fuzzy and opt-in** — off by default; verified members
    toggle their own dot. Only verified, signed-in members see individual dots.
    Store and send only a neighbourhood-level blurred position with a stable
    per-person offset; exact coordinates never stored or sent. Distances via
    routes. Block and report on every profile.
-5. **Quedadas** — verified members post plans (title, city, date, public
-   venue, max people); others join. Shown on the map and in a list per city.
-   Private homes are not allowed as venues.
+5. **Chat with people nearby** — a nearby grid of verified members with their
+   dot on ("en tu zona", "en tu ciudad", "cerca"), distances as routes, never
+   metres; paisanos (same pueblo, de al lado, provincia) highlighted first.
+   One-to-one text chat: you can send one message, and the chat opens when
+   they reply. Block/report, daily message limit, text only at first. Never
+   GPS: "near" comes from the fuzzy dots.
+6. **Quedadas** (last) — verified members post plans (title, city, date,
+   public venue, max people); others join. Shown on the map and in a list per
+   city. Private homes are not allowed as venues.
 
 Still out of scope: payments.

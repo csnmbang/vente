@@ -41,7 +41,9 @@ export default function PrivacyPage() {
 
       <Section title="Qué se ve en el mapa">
         <p>
-          Solo números: cuántas personas hay en cada ciudad y en cada zona de código postal. Nunca
+          Solo números: cuántas personas hay en cada ciudad y en cada zona de código postal, y en
+          cada ciudad cuántas son de cada provincia (por ejemplo, 3 murcianos en Dublín). Tu pueblo
+          no se muestra a nadie. Nunca
           tu nombre, tu correo ni un punto tuyo. Si eres la única persona de Vente en tu código
           postal, en esa zona aparecerá un 1.
         </p>
@@ -68,8 +70,8 @@ export default function PrivacyPage() {
           en la Unión Europea: Supabase (base de datos, Frankfurt), Vercel (la web) y Resend (los
           correos). El mapa de fondo lo sirve OpenFreeMap, así que tu navegador se conecta a sus
           servidores al verlo. No vendemos ni compartimos tus datos con nadie más. Usamos dos cookies técnicas para que el test funcione, que caducan en una hora como mucho.
-          Otra cookie guarda en tu navegador tu ciudad y tu comunidad para calcular distancias en
-          el mapa. No usamos cookies de publicidad ni de seguimiento.
+          Otra cookie guarda en tu navegador tu ciudad y tu provincia para calcular distancias y
+          destacar a tu gente en el mapa. No usamos cookies de publicidad ni de seguimiento.
         </p>
       </Section>
 

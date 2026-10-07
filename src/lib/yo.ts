@@ -1,3 +1,4 @@
+import { PROVINCIAS } from "@/content/provincias";
 import { COMUNIDADES, type Comunidad } from "@/content/rutas";
 
 /**
@@ -5,7 +6,22 @@ import { COMUNIDADES, type Comunidad } from "@/content/rutas";
  * Kept in a plain cookie in the reader's browser: set at sign-up, or picked
  * on the map by visitors. Holds no email or id, only public place data.
  */
-export type Yo = { ciudad: string; lat: number; lng: number; region: Comunidad | null };
+export type Yo = {
+  ciudad: string;
+  lat: number;
+  lng: number;
+  /** Home province, as a key of PROVINCIAS. */
+  provincia: string | null;
+  region: Comunidad | null;
+  /** Set when this came from signing up: the reader is one of the people on the map. */
+  apuntado?: boolean;
+};
+
+/** Home province and its comunidad, from a province key. */
+export function origen(provincia: string | null | undefined): Pick<Yo, "provincia" | "region"> {
+  const p = provincia ? PROVINCIAS[provincia] : undefined;
+  return p ? { provincia: provincia!, region: p.comunidad } : { provincia: null, region: null };
+}
 
 export const YO_COOKIE = "vente_yo";
 export const YO_MAX_AGE = 365 * 24 * 3600;
@@ -19,7 +35,11 @@ export function decodeYo(raw: string | undefined | null): Yo | null {
   try {
     const v = JSON.parse(decodeURIComponent(raw));
     if (typeof v.ciudad !== "string" || typeof v.lat !== "number" || typeof v.lng !== "number") return null;
-    return { ciudad: v.ciudad, lat: v.lat, lng: v.lng, region: asComunidad(v.region) };
+    const o = origen(v.provincia);
+    return {
+      ciudad: v.ciudad, lat: v.lat, lng: v.lng, provincia: o.provincia,
+      region: o.region ?? asComunidad(v.region), apuntado: v.apuntado === true,
+    };
   } catch {
     return null;
   }

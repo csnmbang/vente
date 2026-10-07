@@ -3,10 +3,11 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import type { Map as MlMap } from "maplibre-gl";
+import type { GeoJSONSource, Map as MlMap } from "maplibre-gl";
 import type { MapData } from "@/app/api/map/route";
+import { contarPaisanos } from "@/content/provincias";
 import { readYo, type Yo } from "@/lib/yo";
-import YoPanel, { distanciaDesde } from "./YoPanel";
+import YoPanel, { distanciaDesde, paisanosEn } from "./YoPanel";
 
 // OpenFreeMap: OSM-based vector tiles, free, no API key.
 const STYLE = "https://tiles.openfreemap.org/styles/positron";
@@ -15,8 +16,37 @@ const ZONE_ZOOM = 8;
 
 const plural = (n: number) => `${n} ${n === 1 ? "español" : "españoles"}`;
 
+type CityData = MapData["cities"][number];
+
+/** City dots as GeoJSON; `paisanos` = people from the reader's province (drives the ring). */
+function cityFeatures(cities: CityData[], yo: Yo | null): GeoJSON.FeatureCollection {
+  return {
+    type: "FeatureCollection",
+    features: cities.map((c) => ({
+      type: "Feature",
+      geometry: { type: "Point", coordinates: [c.lng, c.lat] },
+      properties: {
+        id: c.id,
+        people: c.people,
+        paisanos: paisanosEn(yo, c),
+      },
+    })),
+  };
+}
+
+/** "5 madrileños, 3 murcianos, 2 coruñeses y 4 más" */
+function deDonde(c: CityData, yo: Yo | null): string {
+  const lista = Object.entries(c.provincias)
+    .filter(([p]) => p !== yo?.provincia)
+    .sort((a, b) => b[1] - a[1]);
+  const top = lista.slice(0, 3).map(([p, n]) => contarPaisanos(p, n));
+  const resto = lista.slice(3).reduce((n, [, k]) => n + k, 0);
+  return top.join(", ") + (resto ? ` y ${resto} más` : "");
+}
+
 export default function WorldMap() {
   const container = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<MlMap | null>(null);
   const [data, setData] = useState<MapData | null>(null);
   const [zoomedIn, setZoomedIn] = useState(false);
   const [banner, setBanner] = useState<string | null>(null);
@@ -25,7 +55,10 @@ export default function WorldMap() {
   const yoRef = useRef<Yo | null>(null);
   useEffect(() => {
     yoRef.current = yo;
-  }, [yo]);
+    // Re-draw the rings when the reader's province changes.
+    const src = mapRef.current?.getSource("cities");
+    if (src && data && "setData" in src) (src as GeoJSONSource).setData(cityFeatures(data.cities, yo));
+  }, [yo, data]);
 
   useEffect(() => {
     // Browser-only state (cookie, URL), read once after hydration.
@@ -61,6 +94,7 @@ export default function WorldMap() {
         pitchWithRotate: false,
       });
       map = m;
+      mapRef.current = m;
       if (process.env.NODE_ENV === "development") Object.assign(window, { __venteMap: m });
       m.touchZoomRotate.disableRotation();
 
@@ -74,17 +108,8 @@ export default function WorldMap() {
             ]);
           }
         }
-        map.addSource("cities", {
-          type: "geojson",
-          data: {
-            type: "FeatureCollection",
-            features: d.cities.map((c) => ({
-              type: "Feature",
-              geometry: { type: "Point", coordinates: [c.lng, c.lat] },
-              properties: { name: c.name, people: c.people },
-            })),
-          },
-        });
+        const citiesById = new Map(d.cities.map((c) => [c.id, c]));
+        map.addSource("cities", { type: "geojson", data: cityFeatures(d.cities, yoRef.current) });
         map.addSource("zones", {
           type: "geojson",
           data: {
@@ -107,8 +132,9 @@ export default function WorldMap() {
           paint: {
             "circle-color": "#e5322d",
             "circle-opacity": 0.9,
-            "circle-stroke-color": "#1d1424",
-            "circle-stroke-width": 2,
+            // Yellow ring: people from your province live here.
+            "circle-stroke-color": ["case", [">", ["get", "paisanos"], 0], "#ffc93c", "#1d1424"],
+            "circle-stroke-width": ["case", [">", ["get", "paisanos"], 0], 5, 2],
             "circle-radius": ["interpolate", ["linear"], ["sqrt", ["get", "people"]], 1, 8, 10, 30, 30, 56],
           },
         });
@@ -160,14 +186,18 @@ export default function WorldMap() {
         map.on("click", "city-dots", (e) => {
           const f = e.features?.[0];
           if (!f) return;
-          const p = f.properties as { name: string; people: number };
-          const [lng, lat] = (f.geometry as GeoJSON.Point).coordinates;
+          const c = citiesById.get((f.properties as { id: number }).id);
+          if (!c) return;
           const yoAhora = yoRef.current;
-          const lejos = yoAhora ? (distanciaDesde(yoAhora, { lat, lng }) ?? "Tu ciudad") : null;
+          const lejos = yoAhora ? (distanciaDesde(yoAhora, c) ?? "Tu ciudad") : null;
+          const mios = paisanosEn(yoAhora, c);
+          const otros = deDonde(c, yoAhora);
           popup
             .setLngLat(e.lngLat)
             .setHTML(
-              `<strong>${escapeHtml(p.name)}</strong><br>${plural(p.people)}` +
+              `<strong>${escapeHtml(c.name)}</strong><br>${plural(c.people)}` +
+                (mios ? `<br><strong>De tu provincia: ${escapeHtml(contarPaisanos(yoAhora!.provincia!, mios))}</strong>` : "") +
+                (otros ? `<br>${mios ? "Y además: " : ""}${escapeHtml(otros)}` : "") +
                 (lejos ? `<br>${escapeHtml(capitalize(lejos))}` : ""),
             )
             .addTo(map);

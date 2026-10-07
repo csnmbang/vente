@@ -1,7 +1,7 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import { config } from "../config";
-import type { Attempt, CityCount, Place, Signup, Store, ZoneCount } from "./types";
+import type { Attempt, CityCount, CityProvinceCount, Place, Signup, Store, ZoneCount } from "./types";
 
 const PLACE_COLS =
   "id,name,country_code,admin1_name,admin2_name,lat,lng,population,is_abroad,is_es_municipio";
@@ -135,6 +135,17 @@ export function supabaseStore(): Store {
 
     async zoneCounts() {
       return (must(await db.from("zone_counts").select("*")) ?? []) as ZoneCount[];
+    },
+
+    async cityProvinceCounts() {
+      return (must(await db.from("city_province_counts").select("*")) ?? []) as CityProvinceCount[];
+    },
+
+    async provinceTotal(provincia) {
+      const rows = must(
+        await db.from("city_province_counts").select("people").eq("provincia", provincia),
+      ) as { people: number }[] | null;
+      return (rows ?? []).reduce((n, r) => n + r.people, 0);
     },
   };
 }

@@ -8,7 +8,7 @@ import { PASS_COOKIE } from "@/lib/quiz";
 import { clientIpHash, fail, json } from "@/lib/request";
 import { store } from "@/lib/store";
 import type { memoryStore } from "@/lib/store/memory";
-import { asComunidad, YO_COOKIE, YO_MAX_AGE, type Yo } from "@/lib/yo";
+import { origen, YO_COOKIE, YO_MAX_AGE, type Yo } from "@/lib/yo";
 
 const Body = z.object({
   email: z.string().trim().toLowerCase().email().max(254),
@@ -90,13 +90,18 @@ export async function POST(req: Request) {
   // Lets the map say how far other cities are from yours ("a un Alicante–Murcia de ti").
   // (Next URL-encodes cookie values itself, so pass plain JSON.)
   jar.set(YO_COOKIE, JSON.stringify({
-    ciudad: city.name, lat: city.lat, lng: city.lng, region: asComunidad(hometown.admin1_name),
+    ciudad: city.name, lat: city.lat, lng: city.lng, ...origen(hometown.admin2_name), apuntado: true,
   } satisfies Yo), { path: "/", maxAge: YO_MAX_AGE, sameSite: "lax", secure: process.env.NODE_ENV === "production" });
 
-  if (!EMAIL_ENABLED) return json({ status: "confirmed" });
+  // "Ya hay 14 murcianos en Vente": others from your province, not counting you.
+  const provincia = hometown.admin2_name ?? "";
+  const total = await store().provinceTotal(provincia);
+  const paisanos = { provincia, otros: Math.max(0, total - (EMAIL_ENABLED ? 0 : 1)) };
+
+  if (!EMAIL_ENABLED) return json({ status: "confirmed", paisanos });
 
   const token = sign({ kind: "confirm", id: signupId }, 7 * 24 * 3600);
   const m = confirmEmail(`${config.siteUrl}/api/confirmar?token=${token}`);
   await sendEmail(email, m.subject, m.html, m.text);
-  return json({ status: "check-email" });
+  return json({ status: "check-email", paisanos });
 }

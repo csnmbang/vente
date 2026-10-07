@@ -4,7 +4,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { normalizeText } from "../geo";
 import type {
-  Attempt, CityCount, Place, Postcode, Signup, Store, ZoneCount,
+  Attempt, CityCount, CityProvinceCount, Place, Postcode, Signup, Store, ZoneCount,
 } from "./types";
 
 /**
@@ -240,6 +240,25 @@ export function memoryStore(): Store & {
         const c = state().places.get(id)!;
         return { city_id: id, name: c.name, country_code: c.country_code, lat: c.lat, lng: c.lng, people };
       });
+    },
+
+    async cityProvinceCounts() {
+      const counts = new Map<string, CityProvinceCount>();
+      for (const s of state().signups.values()) {
+        if (!s.confirmed_at) continue;
+        const provincia = state().places.get(s.hometown_id)?.admin2_name ?? "";
+        const key = `${s.city_id}|${provincia}`;
+        const c = counts.get(key) ?? { city_id: s.city_id, provincia, people: 0 };
+        c.people++;
+        counts.set(key, c);
+      }
+      return [...counts.values()];
+    },
+
+    async provinceTotal(provincia) {
+      return [...state().signups.values()].filter(
+        (s) => s.confirmed_at && state().places.get(s.hometown_id)?.admin2_name === provincia,
+      ).length;
     },
 
     async zoneCounts() {
