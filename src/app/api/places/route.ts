@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import postcodeCountries from "@/content/postcode-countries.json";
-import { countryName, normalizeText } from "@/lib/geo";
+import { countryName, normalizeText, provinceName } from "@/lib/geo";
 import { json } from "@/lib/request";
 import { store } from "@/lib/store";
 
@@ -12,6 +12,8 @@ export type PlaceOption = {
   detail: string;
   countryCode: string;
   hasPostcodes: boolean;
+  lat: number;
+  lng: number;
 };
 
 /** Search box backend: ?q=lond&scope=abroad (where you live) | es (hometown). */
@@ -36,10 +38,12 @@ export async function GET(req: NextRequest) {
     name: p.name,
     detail:
       scope === "es"
-        ? [p.admin2_name?.replace(/^Provincia de /, ""), p.admin1_name].filter(Boolean).join(", ")
+        ? [provinceName(p.admin2_name), p.admin1_name].filter(Boolean).join(", ")
         : [p.admin1_name, countryName(p.country_code)].filter(Boolean).join(", "),
     countryCode: p.country_code,
     hasPostcodes: WITH_POSTCODES.has(p.country_code),
+    lat: p.lat,
+    lng: p.lng,
   }));
   return json({ places: options });
 }

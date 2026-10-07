@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { Map as MlMap } from "maplibre-gl";
 import type { MapData } from "@/app/api/map/route";
+import { readYo, type Yo } from "@/lib/yo";
+import YoPanel, { distanciaDesde } from "./YoPanel";
 
 // OpenFreeMap: OSM-based vector tiles, free, no API key.
 const STYLE = "https://tiles.openfreemap.org/styles/positron";
@@ -18,11 +20,18 @@ export default function WorldMap() {
   const [data, setData] = useState<MapData | null>(null);
   const [zoomedIn, setZoomedIn] = useState(false);
   const [banner, setBanner] = useState<string | null>(null);
+  const [yo, setYo] = useState<Yo | null>(null);
+  // Map click handlers are registered once, so they read the reader through a ref.
+  const yoRef = useRef<Yo | null>(null);
+  useEffect(() => {
+    yoRef.current = yo;
+  }, [yo]);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    // Read once from the URL on arrival from the confirmation email.
+    // Browser-only state (cookie, URL), read once after hydration.
     // eslint-disable-next-line react-hooks/set-state-in-effect
+    setYo(readYo());
+    const params = new URLSearchParams(window.location.search);
     if (params.has("bienvenida")) setBanner("Correo confirmado. Ya estás en el mapa.");
     else if (params.has("confirmacion"))
       setBanner("El enlace ha caducado. Repite el test para apuntarte.");
@@ -152,9 +161,15 @@ export default function WorldMap() {
           const f = e.features?.[0];
           if (!f) return;
           const p = f.properties as { name: string; people: number };
+          const [lng, lat] = (f.geometry as GeoJSON.Point).coordinates;
+          const yoAhora = yoRef.current;
+          const lejos = yoAhora ? (distanciaDesde(yoAhora, { lat, lng }) ?? "Tu ciudad") : null;
           popup
             .setLngLat(e.lngLat)
-            .setHTML(`<strong>${escapeHtml(p.name)}</strong><br>${plural(p.people)}`)
+            .setHTML(
+              `<strong>${escapeHtml(p.name)}</strong><br>${plural(p.people)}` +
+                (lejos ? `<br>${escapeHtml(capitalize(lejos))}` : ""),
+            )
             .addTo(map);
         });
         map.on("click", "zone-glow", (e) => {
@@ -217,7 +232,8 @@ export default function WorldMap() {
 
       {/* Sits above MapLibre's attribution button. */}
       <div className="pointer-events-none absolute inset-x-0 bottom-8 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-        <div className="card mx-auto max-w-md px-4 py-2 text-sm">
+        <div className="card pointer-events-auto mx-auto max-w-md space-y-2 px-4 py-2 text-sm">
+          {data && <YoPanel yo={yo} cities={data.cities} onChange={setYo} />}
           {zoomedIn ? (
             <div className="flex items-center gap-2">
               <span>1</span>
@@ -233,6 +249,8 @@ export default function WorldMap() {
     </main>
   );
 }
+
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 function escapeHtml(s: string) {
   return s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);

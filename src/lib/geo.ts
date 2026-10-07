@@ -53,6 +53,11 @@ export function postcodeArea(country: string, raw: string): string {
   return pc;
 }
 
+/** "Province of Asturias" / "Provincia de Granada" → "Asturias" / "Granada". */
+export function provinceName(raw: string | null): string {
+  return (raw ?? "").replace(/^(Provincia|Província|Province)\s+(de|da|d'|of)\s*/i, "");
+}
+
 /** Great-circle distance in km. */
 export function haversineKm(
   a: { lat: number; lng: number },

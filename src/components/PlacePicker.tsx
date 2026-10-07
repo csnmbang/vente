@@ -10,12 +10,15 @@ export default function PlacePicker({
   scope,
   value,
   onChange,
+  dropUp = false,
 }: {
   label: string;
   placeholder: string;
   scope: "abroad" | "es";
   value: PlaceOption | null;
   onChange: (p: PlaceOption | null) => void;
+  /** Open the results above the input (for pickers at the bottom of the screen). */
+  dropUp?: boolean;
 }) {
   const id = useId();
   const [query, setQuery] = useState("");
@@ -90,7 +93,7 @@ export default function PlacePicker({
         <ul
           id={`${id}-list`}
           role="listbox"
-          className="absolute z-10 mt-1 max-h-72 w-full overflow-auto rounded-xl border-[3px] border-tinta bg-white shadow-[0_4px_0_var(--tinta)]"
+          className={`absolute z-10 ${dropUp ? "bottom-full mb-1" : "mt-1"} max-h-72 w-full overflow-auto rounded-xl border-[3px] border-tinta bg-white shadow-[0_4px_0_var(--tinta)]`}
         >
           {results.map((p) => (
             <li key={p.id} role="option" aria-selected={false}>

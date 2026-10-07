@@ -10,7 +10,8 @@
     "typecheck": "next typegen && tsc --noEmit",
     "import:geo": "tsx scripts/import-geo.ts",
     "build:places": "tsx scripts/build-places.ts",
-    "postinstall": "node scripts/copy-maplibre-worker.mjs"
+    "postinstall": "node scripts/copy-maplibre-worker.mjs",
+    "check:rutas": "tsx scripts/check-rutas.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3",

@@ -8,6 +8,7 @@ import { PASS_COOKIE } from "@/lib/quiz";
 import { clientIpHash, fail, json } from "@/lib/request";
 import { store } from "@/lib/store";
 import type { memoryStore } from "@/lib/store/memory";
+import { asComunidad, YO_COOKIE, YO_MAX_AGE, type Yo } from "@/lib/yo";
 
 const Body = z.object({
   email: z.string().trim().toLowerCase().email().max(254),
@@ -86,6 +87,11 @@ export async function POST(req: Request) {
     throw e;
   }
   jar.delete(PASS_COOKIE);
+  // Lets the map say how far other cities are from yours ("a un Alicante–Murcia de ti").
+  // (Next URL-encodes cookie values itself, so pass plain JSON.)
+  jar.set(YO_COOKIE, JSON.stringify({
+    ciudad: city.name, lat: city.lat, lng: city.lng, region: asComunidad(hometown.admin1_name),
+  } satisfies Yo), { path: "/", maxAge: YO_MAX_AGE, sameSite: "lax", secure: process.env.NODE_ENV === "production" });
 
   if (!EMAIL_ENABLED) return json({ status: "confirmed" });
 

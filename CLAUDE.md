@@ -100,6 +100,9 @@ traffic is mobile, arriving from a link in a TikTok bio.
    distances are always straight-line from coordinates. The reader's city and
    region come from a `vente_yo` cookie set at sign-up, or a picker for
    visitors (stored only in their browser).
+   **Status: built.** Data in `src/content/rutas.ts` (125 routes, edit
+   freely), logic in `src/lib/rutas.ts` (`distanciaEnRuta`), check with
+   `npm run check:rutas`. Used in map popups and the "Tu ciudad" panel.
 2. **Hometown touches** — "3 murcianos en Dublín" when opening a city; after
    sign-up, how many people from your region are already in.
 3. **Accounts and vouching** — email-link sign-in (no passwords). Passing the

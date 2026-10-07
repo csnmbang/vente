@@ -13,9 +13,11 @@ npm run dev
 Open http://localhost:3000. Without Supabase keys the app runs in **demo mode**:
 data lives in memory (lost on restart) and the map is seeded with fake people.
 
-## Edit the quiz
+## Edit the quiz and the routes
 
-Questions live in `src/content/questions.ts`. The file explains the rules.
+Questions live in `src/content/questions.ts`. Distance routes ("a un
+Alicante–Murcia de ti") live in `src/content/rutas.ts`; run
+`npm run check:rutas` after editing. Both files explain their rules.
 
 ## Set up for real
 
@@ -76,6 +78,7 @@ Takes a few minutes.
 | `npm run build` | Production build |
 | `npm run typecheck` | Generate route types + `tsc` |
 | `npm run import:geo` | Load places + postcodes into Supabase |
+| `npm run check:rutas` | Check `src/content/rutas.ts` and print every route's distance |
 | `npm run build:places` | Rebuild `data/places.csv` from GeoNames dumps (rarely needed) |
 
 Data: GeoNames (CC BY 4.0). Map: © OpenStreetMap, OpenMapTiles, OpenFreeMap.
