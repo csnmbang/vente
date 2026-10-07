@@ -17,8 +17,7 @@ export default function PrivacyPage() {
       </Link>
       <h1 className="mt-6 font-display text-4xl font-extrabold">Tu privacidad</h1>
       <p className="mt-3 text-lg">
-        Corto y sin letra pequeña: guardamos lo mínimo para ponerte en el mapa, y lo borras cuando
-        quieras.
+        Guardamos lo mínimo para ponerte en el mapa, y puedes borrarlo cuando quieras.
       </p>
 
       <Section title="Qué guardamos si te apuntas">
@@ -43,8 +42,8 @@ export default function PrivacyPage() {
       <Section title="Qué se ve en el mapa">
         <p>
           Solo números: cuántas personas hay en cada ciudad y en cada zona de código postal. Nunca
-          tu nombre, tu correo ni un punto tuyo. Ojo: si eres la única persona de Vente en tu
-          código postal, el mapa mostrará un «1» en esa zona.
+          tu nombre, tu correo ni un punto tuyo. Si eres la única persona de Vente en tu código
+          postal, en esa zona aparecerá un 1.
         </p>
       </Section>
 
@@ -63,7 +62,7 @@ export default function PrivacyPage() {
         </p>
       </Section>
 
-      <Section title="Quién más los toca">
+      <Section title="Quién trata tus datos">
         <p>
           Responsable: {RESPONSABLE} ({CONTACT}). Usamos estos proveedores, con los datos alojados
           en la Unión Europea: Supabase (base de datos, Frankfurt), Vercel (la web) y Resend (los
@@ -87,7 +86,7 @@ export default function PrivacyPage() {
       <section id="borrar" className="card mt-8 scroll-mt-6 p-5">
         <h2 className="font-display text-2xl font-extrabold">Borrar mis datos</h2>
         <p className="mt-1 text-gris">
-          Te mandamos un enlace a tu correo y, al pulsarlo, desapareces de Vente. Sin preguntas.
+          Te enviamos un enlace a tu correo. Al pulsarlo, borramos todos tus datos.
         </p>
         <DeleteRequest />
       </section>

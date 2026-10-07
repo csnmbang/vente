@@ -28,11 +28,10 @@ const button = (href: string, label: string) =>
 
 export function confirmEmail(link: string) {
   return {
-    subject: "Confirma y sales en el mapa 📍",
+    subject: "Confirma tu correo para aparecer en Vente",
     html: layout(`
-      <p style="font-size:18px">¡Hola, paisano/a!</p>
       <p>Pulsa el botón para confirmar tu correo y aparecer en el mapa de Vente.</p>
-      ${button(link, "Sí, ponme en el mapa")}
+      ${button(link, "Confirmar mi correo")}
       <p style="font-size:14px;color:#6f6676">Si no has sido tú, ignora este correo y borraremos los datos en 7 días.</p>`),
     text: `Confirma tu correo para aparecer en el mapa de Vente: ${link}\n\nSi no has sido tú, ignora este correo.`,
   };
@@ -40,12 +39,12 @@ export function confirmEmail(link: string) {
 
 export function alreadyInEmail() {
   return {
-    subject: "Ya estabas en Vente 😉",
+    subject: "Este correo ya está en Vente",
     html: layout(`
-      <p>Alguien (seguramente tú) ha intentado apuntarse otra vez con este correo. Ya estás en el mapa, no hace falta nada más.</p>
+      <p>Alguien ha intentado apuntarse otra vez con este correo. Ya estás en el mapa, así que no tienes que hacer nada.</p>
       <p>Si quieres borrar tus datos, puedes hacerlo aquí:</p>
       ${button(`${config.siteUrl}/privacidad#borrar`, "Borrar mis datos")}`),
-    text: `Ya estabas apuntado/a en Vente. Para borrar tus datos: ${config.siteUrl}/privacidad#borrar`,
+    text: `Este correo ya está en Vente. Para borrar tus datos: ${config.siteUrl}/privacidad#borrar`,
   };
 }
 
@@ -53,7 +52,7 @@ export function deleteEmail(link: string) {
   return {
     subject: "Borrar tus datos de Vente",
     html: layout(`
-      <p>Nos has pedido borrar tus datos. Pulsa el botón y desaparecen del todo (y del mapa).</p>
+      <p>Nos has pedido borrar tus datos. Pulsa el botón para borrarlos y dejar de contar en el mapa.</p>
       ${button(link, "Borrar mis datos")}
       <p style="font-size:14px;color:#6f6676">El enlace caduca en 24 horas. Si no lo has pedido tú, ignora este correo.</p>`),
     text: `Para borrar tus datos de Vente, abre este enlace (caduca en 24 h): ${link}`,

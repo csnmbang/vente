@@ -23,9 +23,9 @@ export default function WorldMap() {
     const params = new URLSearchParams(window.location.search);
     // Read once from the URL on arrival from the confirmation email.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (params.has("bienvenida")) setBanner("¡Ya estás en el mapa! Bienvenido/a a la familia 🎉");
+    if (params.has("bienvenida")) setBanner("Correo confirmado. Ya estás en el mapa.");
     else if (params.has("confirmacion"))
-      setBanner("Ese enlace ha caducado. Vuelve a hacer el test para apuntarte.");
+      setBanner("El enlace ha caducado. Repite el test para apuntarte.");
   }, []);
 
   useEffect(() => {
@@ -197,19 +197,19 @@ export default function WorldMap() {
               {data
                 ? total
                   ? `${plural(total)} en ${data.cities.length} ${data.cities.length === 1 ? "ciudad" : "ciudades"}`
-                  : "Aún no hay nadie… ¡estrénalo tú!"
+                  : "Todavía no hay nadie apuntado."
                 : "Cargando el mapa…"}
             </p>
           </div>
           <Link href="/quiz" className="btn btn-rojo min-h-0 px-4 py-2 text-base">
-            Ponte
+            Apuntarme
           </Link>
         </div>
         {banner && (
           <div className="pointer-events-auto mx-auto mt-2 max-w-md rounded-xl border-[3px] border-tinta bg-amarillo p-3 font-bold">
             {banner}
-            <button onClick={() => setBanner(null)} className="float-right ml-2" aria-label="Cerrar">
-              ✕
+            <button onClick={() => setBanner(null)} className="float-right ml-2 text-sm underline">
+              Cerrar
             </button>
           </div>
         )}
@@ -226,7 +226,7 @@ export default function WorldMap() {
               <span className="ml-1 text-gris">por código postal</span>
             </div>
           ) : (
-            <p>Cada punto es una ciudad. Acércate para verlo por código postal 🔍</p>
+            <p>Cada punto es una ciudad. Acerca el mapa para ver los códigos postales.</p>
           )}
         </div>
       </div>

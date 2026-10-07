@@ -49,11 +49,11 @@ export default async function Image({ params }: { params: Promise<{ id: string }
           <div style={{ display: "flex", flexDirection: "column" }}>
             <div style={{ fontSize: 44, fontWeight: 700 }}>He sacado</div>
             <div style={{ fontSize: 200, fontWeight: 800, lineHeight: 1 }}>{score}/10</div>
-            <div style={{ fontSize: 48, fontWeight: 800 }}>{v!.line}</div>
+            <div style={{ fontSize: 48, fontWeight: 800 }}>{v}</div>
           </div>
         )}
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 36 }}>
-          <div style={{ color: "#ffc93c", fontWeight: 800 }}>¿Y tú? Vente pa&apos;cá</div>
+          <div style={{ color: "#ffc93c", fontWeight: 800 }}>Vente pa&apos;cá</div>
           <div>vengavente.com</div>
         </div>
       </div>

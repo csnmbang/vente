@@ -20,8 +20,9 @@ traffic is mobile, arriving from a link in a TikTok bio.
 
 ## Product constraints
 
-- All interface text in **Spanish from Spain**, informal "tú", playful tone,
-  with a wink to the Tuenti era.
+- All interface text in **Spanish from Spain**, informal "tú", plain and
+  direct. **No emojis, no jokey asides or punch lines** tacked onto sentences
+  (owner's rule; it overrides the earlier "playful, Tuenti wink" brief).
 - **Mobile first.** Must load fast and feel good on a phone. Heavy libraries
   (MapLibre) load only on the pages that need them.
 - **Collect the minimum personal data.** Never ask for or store an exact
@@ -64,8 +65,7 @@ traffic is mobile, arriving from a link in a TikTok bio.
   per request needs `<Suspense>` and/or `await connection()`.
 - Place data: `data/places.csv` (committed, from GeoNames via
   `scripts/build-places.ts`); `npm run import:geo` loads it plus postcodes.
-- Copy tone: Spain Spanish, "tú", playful. Tuenti references should be real
-  Tuenti things (privados, etiquetas, estados), not Facebook ones.
+- Copy tone: Spain Spanish, "tú", plain. No emojis, no punch lines.
 
 ## v1 base (built first)
 
@@ -96,6 +96,10 @@ traffic is mobile, arriving from a link in a TikTok bio.
    community. Choose the closest route, preferring the reader's home region,
    then nationally famous routes. First use: on the map, how far the reader's
    city is from other cities with Spaniards.
+   Decisions: routes mix modes (a pie, coche, AVE, tren, ferry, avión) but
+   distances are always straight-line from coordinates. The reader's city and
+   region come from a `vente_yo` cookie set at sign-up, or a picker for
+   visitors (stored only in their browser).
 2. **Hometown touches** — "3 murcianos en Dublín" when opening a city; after
    sign-up, how many people from your region are already in.
 3. **Accounts and vouching** — email-link sign-in (no passwords). Passing the

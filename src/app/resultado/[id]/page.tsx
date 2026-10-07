@@ -23,8 +23,8 @@ export async function generateMetadata({
   const title = `He sacado ${attempt.correct_count}/10 en Vente`;
   return {
     title,
-    description: "¿Y tú, eres de aquí de verdad? Demuéstralo en 10 preguntas.",
-    openGraph: { title, description: "¿Y tú? Vente pa'cá 🇪🇸" },
+    description: "Haz el test y ponte en el mapa de los españoles por el mundo.",
+    openGraph: { title, description: "Haz el test y ponte en el mapa de los españoles por el mundo." },
   };
 }
 
@@ -65,9 +65,7 @@ async function Result({ params }: { params: Promise<{ id: string }> }) {
           {score}
           <span className="text-5xl opacity-80">/10</span>
         </p>
-        <p className="relative mt-2 text-2xl font-extrabold leading-tight">
-          {v.line} {v.emoji}
-        </p>
+        <p className="relative mt-2 text-2xl font-extrabold leading-tight">{v}</p>
         <div className="relative mt-8 flex items-end justify-between">
           <p className="font-display text-2xl font-extrabold text-amarillo">Vente pa&apos;cá</p>
           <p className="text-sm font-bold opacity-90">vengavente.com</p>
@@ -79,9 +77,8 @@ async function Result({ params }: { params: Promise<{ id: string }> }) {
       {isOwner && missed.length > 0 && (
         <section className="mt-6">
           <h2 className="font-display text-xl font-extrabold">
-            Las que se te escaparon ({missed.length})
+            Preguntas falladas ({missed.length})
           </h2>
-          <p className="text-sm text-gris">La respuesta no te la decimos, que luego se chiva todo el mundo 🤐</p>
           <ul className="mt-3 space-y-2">
             {missed.map((qid) => (
               <li key={qid} className="rounded-xl border-2 border-tinta bg-white px-4 py-3">
@@ -94,10 +91,10 @@ async function Result({ params }: { params: Promise<{ id: string }> }) {
 
       {canSignUp && (
         <section className="card mt-8 p-5">
-          <h2 className="font-display text-2xl font-extrabold">¡Estás dentro! 🎉</h2>
+          <h2 className="font-display text-2xl font-extrabold">Apúntate al mapa</h2>
           <p className="mt-1 text-gris">
-            Ponte en el mapa para que los demás vean que aquí también hay españoles. Solo
-            guardamos tu correo y tu zona, nunca tu dirección.
+            Guardamos tu correo, tu ciudad, tu zona de código postal si la pones y tu pueblo.
+            Nunca tu dirección.
           </p>
           <SignupForm emailEnabled={EMAIL_ENABLED} demo={DEMO} />
         </section>
@@ -106,31 +103,31 @@ async function Result({ params }: { params: Promise<{ id: string }> }) {
       {isOwner && attempt.status === "passed" && !canSignUp && (
         <p className="mt-8 rounded-xl bg-amarillo p-4 font-bold">
           {attempt.signup_used
-            ? "Ya te apuntaste con este test. ¡Gracias! 💛"
-            : "Se te pasó el rato para apuntarte. Repite el test y esta vez no te entretengas 😜"}
+            ? "Ya te apuntaste con este test."
+            : "Han pasado más de 30 minutos desde el test. Repítelo para apuntarte."}
         </p>
       )}
 
       {isOwner && attempt.status === "failed" && (
         <div className="card mt-8 p-5">
           <p className="font-bold">
-            Necesitas {QUIZ.passMark} de 10 para entrar. Si eres de aquí, seguro que fueron los
-            nervios. Tienes unos cuantos intentos al día.
+            Necesitas {QUIZ.passMark} aciertos para apuntarte. Puedes repetir el test varias veces
+            al día.
           </p>
           <Link href="/quiz" className="btn btn-rojo mt-4 w-full">
-            Otra vez, que no vale 🔁
+            Repetir el test
           </Link>
         </div>
       )}
 
       {!isOwner && (
         <Link href="/quiz" className="btn btn-rojo mt-6 w-full">
-          ¿Y tú? Haz el test 🇪🇸
+          Hacer el test
         </Link>
       )}
 
       <Link href="/mapa" className="btn btn-blanco mt-4 w-full">
-        Ver el mapa 🗺️
+        Ver el mapa
       </Link>
     </>
   );

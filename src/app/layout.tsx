@@ -14,10 +14,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: "Vente · Vente pa'cá",
   description:
-    "El mapa de los españoles por el mundo. Demuestra que eres de aquí en 10 preguntas y ponte en el mapa.",
+    "El mapa de los españoles que viven fuera de España.",
   openGraph: {
     title: "Vente pa'cá",
-    description: "El mapa de los españoles por el mundo.",
+    description: "El mapa de los españoles que viven fuera de España.",
     locale: "es_ES",
     type: "website",
   },

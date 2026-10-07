@@ -12,31 +12,29 @@ export default function Home() {
         <span className="text-rojo">pa&apos;cá</span>
       </h1>
       <p className="mt-5 text-lg leading-snug">
-        Estás fuera, echas de menos el pan de verdad y no conoces a nadie que
-        sepa lo que es un <em>bocata de calamares</em>. Tranqui, somos un
-        montón.
+        Un mapa de los españoles que vivimos fuera. Mira quién hay en tu ciudad y ponte tú
+        también.
       </p>
 
-      <div className="card mt-8 p-5">
-        <p className="font-display text-xl font-bold">¿Eres de aquí de verdad?</p>
+      <div className="card mt-8 bg-white p-5">
+        <p className="font-display text-xl font-bold">Primero, el test</p>
         <p className="mt-1 text-gris">
-          10 preguntas, 5 segundos cada una. Si eres de España, te salen solas.
-          Si tienes que buscarlas en Google… ya sabemos.
+          10 preguntas sobre crecer en España, con 5 segundos para cada una. Con 8 aciertos
+          puedes apuntarte al mapa.
         </p>
         <Link href="/quiz" className="btn btn-rojo mt-5 w-full">
-          Empezar el test 🇪🇸
+          Empezar el test
         </Link>
       </div>
 
       <Link href="/mapa" className="btn btn-blanco mt-4 w-full">
-        Ver el mapa 🗺️
+        Ver el mapa
       </Link>
 
       <footer className="mt-auto pt-10 text-center text-sm text-gris">
         <Link href="/privacidad" className="underline">
           Privacidad
         </Link>
-        {" · "}Hecho con morriña
       </footer>
     </main>
   );

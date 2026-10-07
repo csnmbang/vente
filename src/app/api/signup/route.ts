@@ -22,7 +22,7 @@ const MAX_POSTCODE_KM = 80;
 
 export async function POST(req: Request) {
   const parsed = Body.safeParse(await req.json().catch(() => null));
-  if (!parsed.success) return fail("Revisa el correo, que algo no cuadra.");
+  if (!parsed.success) return fail("Revisa el correo.");
   const { email, cityId, postcode, hometownId, website } = parsed.data;
 
   // Bots fill every field. Pretend it worked and move on.
@@ -30,12 +30,12 @@ export async function POST(req: Request) {
 
   const jar = await cookies();
   const pass = verify<{ id: string }>(jar.get(PASS_COOKIE)?.value, "pass");
-  if (!pass) return fail("Para apuntarte tienes que aprobar el test (y hace menos de 30 minutos).", 403);
+  if (!pass) return fail("Para apuntarte tienes que haber aprobado el test en los últimos 30 minutos.", 403);
 
   const ipHash = await clientIpHash();
   const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
   if ((await store().countSignupsSince(ipHash, since)) >= SIGNUPS_PER_IP_PER_DAY) {
-    return fail("Demasiadas altas desde esta conexión hoy. Prueba mañana.", 429);
+    return fail("Hoy ya se han hecho demasiadas altas desde esta conexión. Inténtalo mañana.", 429);
   }
 
   const [city, hometown] = await Promise.all([store().getPlace(cityId), store().getPlace(hometownId)]);
@@ -48,9 +48,9 @@ export async function POST(req: Request) {
     const area = postcodeArea(city.country_code, postcode);
     let pc = await store().findPostcode(city.country_code, area);
     if (!pc && DEMO) pc = (store() as ReturnType<typeof memoryStore>).demoPostcode(city.country_code, area, city);
-    if (!pc) return fail("No encontramos ese código postal. Revísalo o déjalo en blanco, que no pasa nada.");
+    if (!pc) return fail("No encontramos ese código postal. Revísalo o déjalo en blanco.");
     if (haversineKm(pc, city) > MAX_POSTCODE_KM) {
-      return fail(`Ese código postal no parece de ${city.name}. ¿Seguro que es el tuyo?`);
+      return fail(`Ese código postal no es de ${city.name}. Revísalo o déjalo en blanco.`);
     }
     postcodeId = pc.id;
   }

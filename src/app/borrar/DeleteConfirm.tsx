@@ -22,9 +22,11 @@ export default function DeleteConfirm() {
   if (state === "done") {
     return (
       <div className="card p-6">
-        <p className="text-4xl">👋</p>
-        <h1 className="mt-2 font-display text-2xl font-extrabold">Borrado. Te echaremos de menos.</h1>
-        <p className="mt-2">Tu correo y tu zona ya no están en Vente. Si algún día vuelves, aquí seguimos.</p>
+        <h1 className="font-display text-2xl font-extrabold">Datos borrados</h1>
+        <p className="mt-2">
+          Hemos borrado tu correo, tu ciudad, tu código postal y tu pueblo. Ya no cuentas en el
+          mapa.
+        </p>
         <Link href="/" className="btn btn-blanco mt-6 w-full">
           Volver al inicio
         </Link>
@@ -46,7 +48,7 @@ export default function DeleteConfirm() {
         disabled={!token || state === "busy"}
         className="btn btn-rojo mt-6 w-full"
       >
-        {state === "busy" ? "Borrando…" : "Sí, bórralo todo"}
+        {state === "busy" ? "Borrando…" : "Borrar mis datos"}
       </button>
     </div>
   );

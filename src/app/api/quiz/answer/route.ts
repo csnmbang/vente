@@ -13,12 +13,12 @@ const Body = z.object({
 
 export async function POST(req: Request) {
   const body = Body.safeParse(await req.json().catch(() => null));
-  if (!body.success) return fail("Respuesta rara. ¿Seguro que no estás haciendo trampas?");
+  if (!body.success) return fail("Respuesta no válida.");
   const { index, choice } = body.data;
 
   const jar = await cookies();
   const session = verify<{ id: string }>(jar.get(QUIZ_COOKIE)?.value, "quiz");
-  if (!session) return fail("Se te ha caducado el test. Empieza otro.", 401);
+  if (!session) return fail("El test ha caducado. Empieza uno nuevo.", 401);
 
   const attempt = await store().getAttempt(session.id);
   if (!attempt || attempt.status !== "in_progress") return fail("Este test ya está terminado.", 409);

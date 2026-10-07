@@ -57,7 +57,7 @@ export default function Quiz() {
         if (data.done) router.push(`/resultado/${data.resultId}`);
         else setPhase({ kind: "question", q: data.next });
       } catch {
-        setPhase({ kind: "error", message: "Se ha ido la conexión. Prueba otra vez." });
+        setPhase({ kind: "error", message: "Se ha perdido la conexión. Vuelve a intentarlo." });
       } finally {
         sending.current = false;
       }
@@ -68,18 +68,18 @@ export default function Quiz() {
   if (phase.kind === "intro" || phase.kind === "loading") {
     return (
       <div className="card p-6">
-        <h1 className="font-display text-3xl font-extrabold">¿Eres de aquí?</h1>
-        <ul className="mt-4 space-y-2 text-lg">
-          <li>⏱️ 10 preguntas, 5 segundos cada una</li>
-          <li>🎯 Necesitas 8 de 10 para entrar</li>
-          <li>🙅 Nada de Google: no te da tiempo</li>
+        <h1 className="font-display text-3xl font-extrabold">El test</h1>
+        <ul className="mt-4 list-disc space-y-2 pl-5 text-lg">
+          <li>10 preguntas, 5 segundos cada una.</li>
+          <li>Necesitas 8 aciertos para apuntarte al mapa.</li>
+          <li>Si se acaba el tiempo, cuenta como fallo.</li>
         </ul>
         <button
           onClick={start}
           disabled={phase.kind === "loading"}
           className="btn btn-rojo mt-6 w-full"
         >
-          {phase.kind === "loading" ? "Preparando…" : "¡Vamos allá!"}
+          {phase.kind === "loading" ? "Preparando…" : "Empezar"}
         </button>
       </div>
     );
@@ -88,8 +88,7 @@ export default function Quiz() {
   if (phase.kind === "error") {
     return (
       <div className="card p-6 text-center">
-        <p className="text-5xl">😬</p>
-        <p className="mt-3 text-lg font-bold">{phase.message}</p>
+        <p className="text-lg font-bold">{phase.message}</p>
         <Link href="/" className="btn btn-blanco mt-6 w-full">
           Volver al inicio
         </Link>
@@ -125,7 +124,7 @@ function QuestionCard({
         <span>
           Pregunta {q.index + 1} de {q.total}
         </span>
-        <span className="rounded-full bg-tinta px-3 py-1 text-white">✓ {score}</span>
+        <span className="rounded-full bg-tinta px-3 py-1 text-white">Aciertos: {score}</span>
       </div>
 
       {/* Countdown bar: restarts for every question via key. */}
@@ -162,7 +161,7 @@ function QuestionCard({
 
       <p className="mt-4 h-6 text-center font-bold">
         {phase.kind === "feedback" &&
-          (phase.correct ? "¡Toma ya! 🎉" : phase.picked === null ? "¡Se acabó el tiempo! ⏰" : "Uy… 🙈")}
+          (phase.correct ? "Correcto" : phase.picked === null ? "Se acabó el tiempo" : "Fallo")}
       </p>
     </div>
   );

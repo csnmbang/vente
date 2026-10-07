@@ -21,7 +21,7 @@ export default function SignupForm({ emailEnabled, demo }: { emailEnabled: boole
     e.preventDefault();
     setError(null);
     if (!city) return setError("Dinos en qué ciudad vives.");
-    if (!hometown) return setError("¿Y de qué pueblo o ciudad de España eres?");
+    if (!hometown) return setError("Dinos de qué pueblo o ciudad de España eres.");
     setSending(true);
     try {
       const form = new FormData(e.currentTarget);
@@ -40,7 +40,7 @@ export default function SignupForm({ emailEnabled, demo }: { emailEnabled: boole
       if (!res.ok) return setError(data.error);
       setDone({ status: data.status, email });
     } catch {
-      setError("Se ha ido la conexión. Prueba otra vez.");
+      setError("Se ha perdido la conexión. Vuelve a intentarlo.");
     } finally {
       setSending(false);
     }
@@ -49,15 +49,15 @@ export default function SignupForm({ emailEnabled, demo }: { emailEnabled: boole
   if (done) {
     return done.status === "check-email" ? (
       <div className="mt-5 rounded-xl bg-amarillo p-4">
-        <p className="text-lg font-extrabold">📬 ¡Mira tu correo!</p>
+        <p className="text-lg font-extrabold">Mira tu correo</p>
         <p className="mt-1">
-          Te hemos mandado un enlace a <strong>{done.email}</strong>. Pulsa en él y apareces en el
-          mapa. Si no llega, mira en spam: a veces se esconde, como tus fotos etiquetadas en Tuenti.
+          Te hemos enviado un enlace a <strong>{done.email}</strong>. Al pulsarlo apareces en el
+          mapa. Si no lo ves, revisa la carpeta de spam.
         </p>
       </div>
     ) : (
       <div className="mt-5 rounded-xl bg-amarillo p-4">
-        <p className="text-lg font-extrabold">📍 ¡Ya estás en el mapa!</p>
+        <p className="text-lg font-extrabold">Ya estás en el mapa</p>
         <Link href="/mapa" className="btn btn-rojo mt-3 w-full">
           Ver el mapa
         </Link>
@@ -107,8 +107,8 @@ export default function SignupForm({ emailEnabled, demo }: { emailEnabled: boole
             onChange={(e) => setPostcode(e.target.value)}
           />
           <p className="mt-1 text-sm text-gris">
-            Así te ponemos en tu zona y no en el centro de la ciudad. Solo guardamos la zona del
-            código postal, nunca tu calle.
+            Sirve para mostrarte en tu zona y no en el centro de la ciudad. Guardamos solo la
+            zona, nunca tu calle.
           </p>
         </div>
       )}
@@ -121,7 +121,7 @@ export default function SignupForm({ emailEnabled, demo }: { emailEnabled: boole
         onChange={setHometown}
       />
 
-      {/* Honeypot: invisible to people, irresistible to bots. */}
+      {/* Honeypot: hidden from people, filled in by bots. */}
       <div aria-hidden className="absolute left-[-9999px]">
         <label>
           No rellenes esto <input name="website" tabIndex={-1} autoComplete="off" />
@@ -148,12 +148,12 @@ export default function SignupForm({ emailEnabled, demo }: { emailEnabled: boole
       {error && <p className="rounded-xl bg-rojo/10 p-3 font-bold text-rojo-oscuro">{error}</p>}
 
       <button type="submit" disabled={sending} className="btn btn-rojo w-full">
-        {sending ? "Apuntándote…" : "Ponme en el mapa 📍"}
+        {sending ? "Enviando…" : "Apuntarme"}
       </button>
 
       {demo && (
         <p className="text-center text-xs text-gris">
-          Modo demo: no se guarda nada{emailEnabled ? "" : " y no se envían correos"}.
+          Modo demo: los datos no se guardan{emailEnabled ? "" : " y no se envían correos"}.
         </p>
       )}
     </form>

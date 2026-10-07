@@ -7,7 +7,7 @@ export default function ShareButton({ score }: { score: number }) {
 
   async function share() {
     const url = window.location.href;
-    const text = `He sacado ${score}/10 en Vente 🇪🇸 ¿Y tú, eres de aquí de verdad?`;
+    const text = `He sacado ${score}/10 en el test de Vente.`;
     if (navigator.share) {
       try {
         await navigator.share({ title: "Vente pa'cá", text, url });
@@ -24,11 +24,8 @@ export default function ShareButton({ score }: { score: number }) {
   return (
     <div className="mt-4">
       <button onClick={share} className="btn btn-blanco w-full">
-        {copied ? "¡Enlace copiado! 📋" : "Compártelo 📲"}
+        {copied ? "Enlace copiado" : "Compartir"}
       </button>
-      <p className="mt-2 text-center text-sm text-gris">
-        O hazle una captura y pica a tus colegas en TikTok
-      </p>
     </div>
   );
 }

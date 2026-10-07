@@ -9,7 +9,7 @@ export async function POST() {
   const ipHash = await clientIpHash();
   const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
   if ((await store().countAttemptsSince(ipHash, since)) >= QUIZ.attemptsPerDay) {
-    return fail("Has gastado todos los intentos de hoy. Vuelve mañana, que no se va a ir nadie 😉", 429);
+    return fail("Has usado todos los intentos de hoy. Puedes volver a intentarlo mañana.", 429);
   }
 
   const attempt = await store().createAttempt({
