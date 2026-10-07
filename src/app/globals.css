@@ -33,6 +33,7 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+@layer components {
 /* Chunky, thumb-friendly button used everywhere. */
 .btn {
   display: inline-flex;
@@ -84,4 +85,10 @@ body {
 .input:focus {
   outline: 3px solid var(--amarillo);
   outline-offset: 1px;
+}
+}
+
+@keyframes countdown {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
 }
