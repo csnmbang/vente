@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "next typegen && tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit",
+    "import:geo": "tsx scripts/import-geo.ts",
+    "build:places": "tsx scripts/build-places.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3",
