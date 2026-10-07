@@ -38,8 +38,10 @@ traffic is mobile, arriving from a link in a TikTok bio.
   enabled on every table with no public policies.
 - MapLibre GL with OpenFreeMap tiles (OSM-based, free, no key).
 - GeoNames data (CC-BY) for cities, Spanish municipios and postcodes.
-- Resend for email, **switched off until a domain is set up**
-  (`RESEND_API_KEY` empty ⇒ no emails; sign-ups are confirmed immediately).
+- Resend for email from `hola@vengavente.com` (`RESEND_API_KEY` empty, e.g.
+  in local dev ⇒ no emails; sign-ups are confirmed immediately).
+- Domain: **vengavente.com** (Namecheap DNS). Inbound mail to
+  `hola@vengavente.com` is forwarded via ImprovMX.
 - Deploy target: Vercel free tier.
 
 ## v1 base (built first)
@@ -53,7 +55,8 @@ traffic is mobile, arriving from a link in a TikTok bio.
 3. **Sign-up** (only after passing, via a single-use signed cookie): email,
    current city (search box), optional postcode, hometown in Spain (municipio).
    We store the city centre and the postcode area's centre, never an address.
-   Double opt-in emails once Resend is configured.
+   Double opt-in: the email link confirms the sign-up; only confirmed
+   sign-ups count on the map.
 4. **Public map** — no individual people. Zoomed out: one dot per city, sized
    by count. Zoomed in: one dot per postcode area (shown even with 1 person),
    coloured from light red (1) to very dark red (100+).
@@ -76,8 +79,7 @@ traffic is mobile, arriving from a link in a TikTok bio.
    quiz makes you "pendiente". You become "verificado" when two verified
    members vouch for you, or when you join through a verified member's invite
    link. Limited vouches per member; who vouched for whom is recorded. Admin
-   page to verify the first members by hand and to remove people. Needs
-   Resend + domain.
+   page to verify the first members by hand and to remove people.
 4. **Individual dots, fuzzy and opt-in** — off by default; verified members
    toggle their own dot. Only verified, signed-in members see individual dots.
    Store and send only a neighbourhood-level blurred position with a stable
