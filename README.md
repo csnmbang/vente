@@ -21,6 +21,8 @@ Alicante–Murcia de ti") live in `src/content/rutas.ts`; run
 
 ## Set up for real
 
+First time? Follow the beginner guide in [docs/SETUP.md](docs/SETUP.md). The short version:
+
 ### 1. Supabase (database)
 
 1. Create a project at supabase.com. **Region: Central EU (Frankfurt)**.
