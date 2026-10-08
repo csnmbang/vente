@@ -57,6 +57,9 @@ async function Panel({ searchParams }: { searchParams: Promise<Record<string, st
     <>
       <h1 className="font-display text-3xl font-extrabold">Vente en números</h1>
       <p className="text-gris">Las visitas están en Vercel → Analytics.</p>
+      <form method="post" action={`/api/admin/refrescar?clave=${encodeURIComponent(String(clave))}`} className="mt-3">
+        <button className="btn btn-blanco min-h-0 w-full py-2 text-base">Actualizar el mapa</button>
+      </form>
 
       <div className="mt-6 grid grid-cols-2 gap-3">
         <Dato titulo="Tests (24 h)" valor={s.attempts.day} detalle={`${s.attempts.passedDay} aprobados`} />
