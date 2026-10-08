@@ -26,13 +26,6 @@ export type Question = {
 
 export const QUESTIONS: Question[] = [
   {
-    id: "nochevieja-uvas",
-    category: "tradiciones",
-    question: "En Nochevieja, con cada campanada te comes…",
-    options: ["Una uva", "Una aceituna", "Una almendra", "Una gamba"],
-    answer: "Una uva",
-  },
-  {
     id: "mas-cuento-que",
     category: "refranes",
     question: "Tienes más cuento que…",
@@ -40,25 +33,11 @@ export const QUESTIONS: Question[] = [
     answer: "Calleja",
   },
   {
-    id: "regalos-6-enero",
-    category: "tradiciones",
-    question: "¿Quién trae los regalos la noche del 5 al 6 de enero?",
-    options: ["Los Reyes Magos", "Papá Noel", "La Befana", "El Ratoncito Pérez"],
-    answer: "Los Reyes Magos",
-  },
-  {
     id: "cuadernos-verano",
     category: "cole",
     question: "Los cuadernillos de cuentas y caligrafía del verano eran los…",
     options: ["Rubio", "Anaya", "Santillana", "Milan"],
     answer: "Rubio",
-  },
-  {
-    id: "vamos-a-la-cama",
-    category: "tele",
-    question: "«Vamos a la cama, que hay que descansar…» lo cantaba…",
-    options: ["La familia Telerín", "Barrio Sésamo", "Los Fruittis", "Doraemon"],
-    answer: "La familia Telerín",
   },
   {
     id: "bocata-calamares",
@@ -101,44 +80,11 @@ export const QUESTIONS: Question[] = [
     answer: "Los números de la Lotería de Navidad",
   },
   {
-    id: "la-seno",
-    category: "cole",
-    question: "En el cole, «la seño» era…",
-    options: ["La profesora", "La directora", "La conserje", "La del comedor"],
-    answer: "La profesora",
-  },
-  {
     id: "saber-y-ganar",
     category: "tele",
     question: "¿Quién lleva media vida presentando «Saber y ganar»?",
     options: ["Jordi Hurtado", "Carlos Sobera", "Matías Prats", "Arturo Valls"],
     answer: "Jordi Hurtado",
-  },
-  {
-    id: "ruperta",
-    category: "tele",
-    question: "En el «Un, dos, tres», la Ruperta era…",
-    options: ["Una calabaza", "Un pato", "Una vaca", "Un dragón"],
-    answer: "Una calabaza",
-  },
-  {
-    id: "calimocho",
-    category: "comida",
-    question: "Un calimocho es…",
-    options: [
-      "Vino tinto con cola",
-      "Vino con gaseosa",
-      "Cerveza con limón",
-      "Sidra con zumo",
-    ],
-    answer: "Vino tinto con cola",
-  },
-  {
-    id: "una-de-bravas",
-    category: "comida",
-    question: "Si pides «una de bravas», te traen…",
-    options: ["Patatas", "Gambas", "Croquetas", "Alitas"],
-    answer: "Patatas",
   },
   {
     id: "no-hay-mal",
@@ -167,18 +113,18 @@ export const QUESTIONS: Question[] = [
     answer: "La Puerta del Sol",
   },
   {
-    id: "espinete",
-    category: "tele",
-    question: "Espinete, de «Barrio Sésamo», era…",
-    options: ["Un erizo", "Un oso", "Un topo", "Un perro"],
-    answer: "Un erizo",
-  },
-  {
     id: "hacer-novillos",
     category: "cole",
     question: "«Hacer novillos» es…",
     options: ["Faltar a clase", "Ir a los toros", "Hacer los deberes", "Ligar"],
     answer: "Faltar a clase",
+  },
+  {
+    id: "simpson-hora",
+    category: "tele",
+    question: "Tradicionalmente, Los Simpson en Antena 3 eran…",
+    options: ["A la hora de comer", "Por la mañana", "A la hora de merendar", "Por la noche"],
+    answer: "A la hora de comer",
   },
 ];
 
