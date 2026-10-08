@@ -147,6 +147,41 @@ export const QUESTIONS: Question[] = [
     options: ["Muy lejos", "Muy borracho", "En el monte", "En las nubes"],
     answer: "Muy lejos",
   },
+  {
+    id: "montepinar",
+    category: "tele",
+    question: "La urbanización de «La que se avecina» es…",
+    options: ["Mirador de Montepinar", "Desengaño 21", "Los Robles", "Santa Justa"],
+    answer: "Mirador de Montepinar",
+  },
+  {
+    id: "tuenti",
+    category: "tele",
+    question: "Antes de Instagram, estábamos todos en…",
+    options: ["Tuenti", "Hi5", "Myspace", "Facebook"],
+    answer: "Tuenti",
+  },
+  {
+    id: "gol-mundial-2010",
+    category: "tradiciones",
+    question: "¿Quién marcó el gol de la final del Mundial 2010?",
+    options: ["Iniesta", "Villa", "Torres", "Xavi"],
+    answer: "Iniesta",
+  },
+  {
+    id: "hacendado",
+    category: "comida",
+    question: "La marca blanca de Mercadona es…",
+    options: ["Hacendado", "Milbona", "Aliada", "Carrefour Classic"],
+    answer: "Hacendado",
+  },
+  {
+    id: "despues-de-sexto",
+    category: "cole",
+    question: "Después de 6º de primaria empezabas…",
+    options: ["1º de la ESO", "1º de bachillerato", "7º de EGB", "7º de primaria"],
+    answer: "1º de la ESO",
+  },
 ];
 
 // Fail fast on a bad edit (runs once when the server loads this file).
