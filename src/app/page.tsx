@@ -15,12 +15,11 @@ export default function Home() {
         <span className="text-rojo">pa&apos;cá</span>
       </h1>
       <p className="mt-5 text-lg leading-snug">
-        Un mapa de los españoles que vivimos fuera. Mira quién hay en tu ciudad y ponte tú
-        también.
+        La comunidad de los españoles que vivimos fuera.
       </p>
 
       {/* Depends on who's visiting, so it streams in after the static part. */}
-      <Suspense fallback={<div className="mt-8 h-[17rem]" />}>
+      <Suspense fallback={<div className="mt-6 h-[26rem]" />}>
         <Entrada />
       </Suspense>
 
@@ -73,11 +72,26 @@ async function Entrada() {
 
   return (
     <>
+      {/* What you get, before asking for anything. */}
+      <ul className="mt-6 space-y-3 text-lg leading-snug">
+        <li className="flex gap-3">
+          <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-rojo" />
+          Mira dónde viven los españoles de tu ciudad.
+        </li>
+        <li className="flex gap-3">
+          <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-rojo" />
+          Habla con los de tu zona en el chat.
+        </li>
+        <li className="flex gap-3">
+          <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-rojo" />
+          Encuentra a gente de tu provincia y de tu pueblo.
+        </li>
+      </ul>
+
       <div className="card mt-8 bg-white p-5">
-        <p className="font-display text-xl font-bold">Primero, demuestra que eres de aquí</p>
+        <p className="font-display text-xl font-bold">¿Eres de aquí de verdad?</p>
         <p className="mt-1 text-gris">
-          5 preguntas que solo sabe quien creció en España, con 5 segundos para cada una.
-          Apruebas, dejas tu correo y el mapa es tuyo.
+          Para que solo entren españoles, primero 5 preguntas rápidas. Tardas 25 segundos.
         </p>
         <Link href="/quiz" className="btn btn-rojo mt-5 w-full">
           Empezar el test

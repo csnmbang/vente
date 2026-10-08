@@ -13,6 +13,8 @@ import YoPanel, { distanciaDesde, paisanosEn } from "./YoPanel";
 const STYLE = "https://tiles.openfreemap.org/styles/positron";
 // Below this zoom we show one dot per city; above it, postcode zones.
 const ZONE_ZOOM = 8;
+// Below this, a small total puts people off: the locked screen invites them to be first instead.
+const MOSTRAR_TOTAL_DESDE = 50;
 
 const plural = (n: number) => `${n} ${n === 1 ? "español" : "españoles"}`;
 
@@ -326,9 +328,9 @@ function Candado({ locked }: { locked: LockedMap }) {
           El mapa es solo para los de aquí
         </h1>
         <p className="mt-3 text-lg">
-          {locked.people > 0
+          {locked.people >= MOSTRAR_TOTAL_DESDE
             ? `Hay ${plural(locked.people)} en ${locked.cities} ${locked.cities === 1 ? "ciudad" : "ciudades"}.`
-            : "Todavía no hay nadie en el mapa."}{" "}
+            : "El mapa se está llenando. Sé de los primeros en tu ciudad."}{" "}
           Aprueba el test y deja tu correo para verlo siempre.
         </p>
         <Link href="/quiz" className="btn btn-rojo mt-6 w-full">
