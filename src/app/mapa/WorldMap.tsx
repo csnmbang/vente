@@ -4,7 +4,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { GeoJSONSource, Map as MlMap } from "maplibre-gl";
-import type { MapData } from "@/app/api/map/route";
+import type { LockedMap, MapData } from "@/app/api/map/route";
 import { contarPaisanos } from "@/content/provincias";
 import { readYo, type Yo } from "@/lib/yo";
 import YoPanel, { distanciaDesde, paisanosEn } from "./YoPanel";
@@ -48,6 +48,7 @@ export default function WorldMap() {
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
   const [data, setData] = useState<MapData | null>(null);
+  const [locked, setLocked] = useState<LockedMap | null>(null);
   const [zoomedIn, setZoomedIn] = useState(false);
   const [banner, setBanner] = useState<string | null>(null);
   const [yo, setYo] = useState<Yo | null>(null);
@@ -79,10 +80,13 @@ export default function WorldMap() {
         import("maplibre-gl"),
         fetch("/api/map"),
       ]);
-      const d: MapData = await res.json();
+      const r: MapData | LockedMap = await res.json();
       if (cancelled || !container.current) return;
       maplibregl.setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
-      setData(d);
+      // Locked: the map is only a blurred backdrop, with no data on it.
+      const d: MapData = r.locked ? { cities: [], zones: [] } : r;
+      if (r.locked) setLocked(r);
+      else setData(r);
 
       const m = new maplibregl.Map({
         container: container.current,
@@ -228,11 +232,13 @@ export default function WorldMap() {
   return (
     <main className="relative h-dvh w-full overflow-hidden">
       {/* MapLibre's CSS sets position:relative on the map element, so it gets a wrapper. */}
-      <div className="absolute inset-0 bg-[#f2efe9]">
+      <div className={`absolute inset-0 bg-[#f2efe9] ${locked ? "pointer-events-none blur-[6px]" : ""}`}>
         <div ref={container} className="h-full w-full" />
       </div>
 
-      <header className="pointer-events-none absolute inset-x-0 top-0 p-3">
+      {locked && <Candado locked={locked} />}
+
+      <header className={`pointer-events-none absolute inset-x-0 top-0 p-3 ${locked ? "hidden" : ""}`}>
         <div className="card pointer-events-auto mx-auto flex max-w-md items-center justify-between px-4 py-3">
           <div>
             <Link href="/" className="font-display text-xl font-extrabold text-rojo">
@@ -261,7 +267,7 @@ export default function WorldMap() {
       </header>
 
       {/* Sits above MapLibre's attribution button. */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-8 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      <div className={`pointer-events-none absolute ${locked ? "hidden" : ""} inset-x-0 bottom-8 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]`}>
         <div className="card pointer-events-auto mx-auto max-w-md space-y-2 px-4 py-2 text-sm">
           {data && <YoPanel yo={yo} cities={data.cities} onChange={setYo} />}
           {zoomedIn ? (
@@ -277,6 +283,31 @@ export default function WorldMap() {
         </div>
       </div>
     </main>
+  );
+}
+
+/** Shown over the blurred map until the visitor passes the test and leaves their email. */
+function Candado({ locked }: { locked: LockedMap }) {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center p-5">
+      <div className="card w-full max-w-md p-6">
+        <Link href="/" className="font-display text-xl font-extrabold text-rojo">
+          Vente
+        </Link>
+        <h1 className="mt-3 font-display text-3xl font-extrabold leading-tight">
+          El mapa es solo para los de aquí
+        </h1>
+        <p className="mt-3 text-lg">
+          {locked.people > 0
+            ? `Hay ${plural(locked.people)} en ${locked.cities} ${locked.cities === 1 ? "ciudad" : "ciudades"}.`
+            : "Todavía no hay nadie en el mapa."}{" "}
+          Aprueba el test y deja tu correo para verlo siempre.
+        </p>
+        <Link href="/quiz" className="btn btn-rojo mt-6 w-full">
+          Hacer el test
+        </Link>
+      </div>
+    </div>
   );
 }
 

@@ -80,7 +80,13 @@ traffic is mobile, arriving from a link in a TikTok bio.
    We store the city centre and the postcode area's centre, never an address.
    Double opt-in: the email link confirms the sign-up; only confirmed
    sign-ups count on the map.
-4. **Public map** — no individual people. Zoomed out: one dot per city, sized
+4. **Map, unlocked by email** — locked until you pass the quiz **and** leave
+   your email (signed `vente_mapa` cookie, 1 year; also set by the
+   confirmation link). Locked visitors get a blurred map and only the totals
+   ("Hay 198 españoles en 24 ciudades"); `/api/map` never sends details
+   without the cookie. Two tries per person (`QUIZ.maxChances`), counted by
+   hashed connection and a browser cookie; after that, write to hola@.
+   No individual people. Zoomed out: one dot per city, sized
    by count. Zoomed in: one dot per postcode area (shown even with 1 person),
    coloured from light red (1) to very dark red (100+).
 5. **Privacy page** (`/privacidad`) — what is stored and why, and how to

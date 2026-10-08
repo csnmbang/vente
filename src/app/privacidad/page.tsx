@@ -69,7 +69,7 @@ export default function PrivacyPage() {
           Responsable: {RESPONSABLE} ({CONTACT}). Usamos estos proveedores, con los datos alojados
           en la Unión Europea: Supabase (base de datos, Frankfurt), Vercel (la web) y Resend (los
           correos). El mapa de fondo lo sirve OpenFreeMap, así que tu navegador se conecta a sus
-          servidores al verlo. No vendemos ni compartimos tus datos con nadie más. Usamos cookies técnicas para que el test funcione y para contar tus intentos (tienes 2).
+          servidores al verlo. No vendemos ni compartimos tus datos con nadie más. Usamos cookies técnicas para que el test funcione, para contar tus intentos (tienes 2) y para recordar que ya puedes ver el mapa.
           Otra cookie guarda en tu navegador tu ciudad y tu provincia para calcular distancias y
           destacar a tu gente en el mapa. No usamos cookies de publicidad ni de seguimiento.
         </p>

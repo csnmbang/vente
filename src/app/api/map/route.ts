@@ -1,9 +1,14 @@
 import { cacheLife } from "next/cache";
 import { connection } from "next/server";
 import { DEMO } from "@/lib/config";
+import { mapUnlocked } from "@/lib/quiz";
 import { store } from "@/lib/store";
 
+/** Before unlocking: only the totals, so the locked screen can tease them. */
+export type LockedMap = { locked: true; people: number; cities: number };
+
 export type MapData = {
+  locked?: false;
   cities: {
     id: number;
     name: string;
@@ -18,11 +23,15 @@ export type MapData = {
 
 /** Public aggregate counts for the map. Never individual people. */
 export async function GET() {
-  if (DEMO) {
-    await connection(); // local demo: always fresh
-    return Response.json(await loadMapData());
-  }
-  return Response.json(await cachedMapData());
+  await connection(); // per-request: depends on the visitor's cookie
+  const data = DEMO ? await loadMapData() : await cachedMapData();
+  if (await mapUnlocked()) return Response.json(data);
+  const locked: LockedMap = {
+    locked: true,
+    people: data.cities.reduce((n, c) => n + c.people, 0),
+    cities: data.cities.length,
+  };
+  return Response.json(locked);
 }
 
 async function cachedMapData() {

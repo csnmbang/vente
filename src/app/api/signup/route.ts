@@ -4,7 +4,7 @@ import { config, DEMO, EMAIL_ENABLED, SIGNUPS_PER_IP_PER_DAY } from "@/lib/confi
 import { sign, verify } from "@/lib/crypto";
 import { alreadyInEmail, confirmEmail, sendEmail } from "@/lib/email";
 import { haversineKm, postcodeArea } from "@/lib/geo";
-import { PASS_COOKIE } from "@/lib/quiz";
+import { PASS_COOKIE, unlockMap } from "@/lib/quiz";
 import { clientIpHash, fail, json } from "@/lib/request";
 import { store } from "@/lib/store";
 import type { memoryStore } from "@/lib/store/memory";
@@ -63,6 +63,7 @@ export async function POST(req: Request) {
     const m = alreadyInEmail();
     await sendEmail(email, m.subject, m.html, m.text);
     jar.delete(PASS_COOKIE);
+    await unlockMap();
     return json({ status: "check-email" });
   }
 
@@ -87,6 +88,7 @@ export async function POST(req: Request) {
     throw e;
   }
   jar.delete(PASS_COOKIE);
+  await unlockMap();
   // Lets the map say how far other cities are from yours ("a un Alicante–Murcia de ti").
   // (Next URL-encodes cookie values itself, so pass plain JSON.)
   jar.set(YO_COOKIE, JSON.stringify({

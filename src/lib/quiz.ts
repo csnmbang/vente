@@ -3,6 +3,7 @@ import { randomInt } from "node:crypto";
 import { QUESTIONS, QUESTIONS_BY_ID } from "@/content/questions";
 import { cookies } from "next/headers";
 import { QUIZ } from "./config";
+import { sign, verify } from "./crypto";
 import { clientIpHash } from "./request";
 import { store } from "./store";
 import type { Attempt } from "./store";
@@ -11,6 +12,24 @@ export const QUIZ_COOKIE = "vente_quiz";
 export const PASS_COOKIE = "vente_pass";
 /** Tries used in this browser that didn't pass. Backs up the per-connection count. */
 export const CHANCES_COOKIE = "vente_intentos";
+/** Set when someone leaves their email after passing: the map stays open for a year. */
+export const MAP_COOKIE = "vente_mapa";
+const MAP_MAX_AGE = 365 * 24 * 3600;
+
+export async function unlockMap() {
+  (await cookies()).set(MAP_COOKIE, sign({ kind: "mapa" }, MAP_MAX_AGE), {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: MAP_MAX_AGE,
+  });
+}
+
+export async function mapUnlocked(): Promise<boolean> {
+  return verify((await cookies()).get(MAP_COOKIE)?.value, "mapa") !== null;
+}
+
 export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hola@vengavente.com";
 
 /** How many tries this person has used without passing (connection or browser, whichever is higher). */

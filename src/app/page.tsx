@@ -17,10 +17,10 @@ export default function Home() {
       </p>
 
       <div className="card mt-8 bg-white p-5">
-        <p className="font-display text-xl font-bold">Primero, el test</p>
+        <p className="font-display text-xl font-bold">Primero, demuestra que eres de aquí</p>
         <p className="mt-1 text-gris">
-          5 preguntas sobre crecer en España, con 5 segundos para cada una. Con 4 aciertos
-          puedes apuntarte al mapa.
+          5 preguntas que solo sabe quien creció en España, con 5 segundos para cada una.
+          Apruebas, dejas tu correo y el mapa es tuyo.
         </p>
         <Link href="/quiz" className="btn btn-rojo mt-5 w-full">
           Empezar el test

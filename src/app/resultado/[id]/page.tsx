@@ -93,9 +93,9 @@ async function Result({ params }: { params: Promise<{ id: string }> }) {
 
       {canSignUp && (
         <section className="card mt-8 p-5">
-          <h2 className="font-display text-2xl font-extrabold">Apúntate al mapa</h2>
+          <h2 className="font-display text-2xl font-extrabold">Aprobado. Desbloquea el mapa</h2>
           <p className="mt-1 text-gris">
-            Guardamos tu correo, tu ciudad, tu zona de código postal si la pones y tu pueblo.
+            Escribe tu correo para ver el mapa siempre y aparecer en él. Guardamos tu correo, tu ciudad, tu zona de código postal si la pones y tu pueblo.
             Nunca tu dirección.
           </p>
           <SignupForm emailEnabled={EMAIL_ENABLED} demo={DEMO} />
