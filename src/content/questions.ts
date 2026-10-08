@@ -122,9 +122,30 @@ export const QUESTIONS: Question[] = [
   {
     id: "simpson-hora",
     category: "tele",
-    question: "Tradicionalmente, Los Simpson en Antena 3 eran…",
-    options: ["A la hora de comer", "Por la mañana", "A la hora de merendar", "Por la noche"],
-    answer: "A la hora de comer",
+    question: "¿A qué hora echaban Los Simpson en Antena 3?",
+    options: ["A las 12h", "A las 13h", "A las 14h", "A las 15h"],
+    answer: "A las 14h",
+  },
+  {
+    id: "kojak",
+    category: "comida",
+    question: "Un Kojak era…",
+    options: ["Un chupa-chups con chicle dentro", "Un helado de palo", "Un chicle de fresa", "Un bollo de chocolate"],
+    answer: "Un chupa-chups con chicle dentro",
+  },
+  {
+    id: "fistro-pecador",
+    category: "tele",
+    question: "«¡Fistro pecador de la pradera!» lo decía…",
+    options: ["Chiquito de la Calzada", "Martes y Trece", "Paco Martínez Soria", "Los Morancos"],
+    answer: "Chiquito de la Calzada",
+  },
+  {
+    id: "quinto-pino",
+    category: "refranes",
+    question: "Estar en el quinto pino es estar…",
+    options: ["Muy lejos", "Muy borracho", "En el monte", "En las nubes"],
+    answer: "Muy lejos",
   },
 ];
 
