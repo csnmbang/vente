@@ -17,7 +17,7 @@ type Phase =
   | { kind: "loading" }
   | { kind: "question"; q: Question }
   | { kind: "feedback"; q: Question; picked: number | null; correct: boolean }
-  | { kind: "error"; message: string };
+  | { kind: "error"; message: string; contacto?: boolean };
 
 const FEEDBACK_MS = 400;
 
@@ -31,7 +31,8 @@ export default function Quiz() {
     setPhase({ kind: "loading" });
     const res = await fetch("/api/quiz/start", { method: "POST" });
     const data = await res.json();
-    if (!res.ok) return setPhase({ kind: "error", message: data.error });
+    // 429 = no tries left: offer to write to us.
+    if (!res.ok) return setPhase({ kind: "error", message: data.error, contacto: res.status === 429 });
     setScore(0);
     setPhase({ kind: "question", q: data.question });
   }
@@ -73,6 +74,7 @@ export default function Quiz() {
           <li>5 preguntas, 5 segundos cada una.</li>
           <li>Necesitas 4 aciertos para apuntarte al mapa.</li>
           <li>Si se acaba el tiempo, cuenta como fallo.</li>
+          <li>Tienes 2 intentos.</li>
         </ul>
         <button
           onClick={start}
@@ -89,7 +91,12 @@ export default function Quiz() {
     return (
       <div className="card p-6 text-center">
         <p className="text-lg font-bold">{phase.message}</p>
-        <Link href="/" className="btn btn-blanco mt-6 w-full">
+        {phase.contacto && (
+          <a href="mailto:hola@vengavente.com?subject=Vente%3A%20el%20test" className="btn btn-rojo mt-6 w-full">
+            Escribir a hola@vengavente.com
+          </a>
+        )}
+        <Link href="/" className="btn btn-blanco mt-4 w-full">
           Volver al inicio
         </Link>
       </div>

@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { z } from "zod";
 import { QUIZ } from "@/lib/config";
 import { sign, verify } from "@/lib/crypto";
-import { isCorrect, PASS_COOKIE, publicQuestion, QUIZ_COOKIE } from "@/lib/quiz";
+import { CHANCES_COOKIE, isCorrect, PASS_COOKIE, publicQuestion, QUIZ_COOKIE } from "@/lib/quiz";
 import { fail, json } from "@/lib/request";
 import { store } from "@/lib/store";
 
@@ -53,6 +53,7 @@ export async function POST(req: Request) {
   // The quiz cookie stays until it expires: it marks you as the owner of
   // this result, so only you see which questions you missed.
   if (updated.status === "passed") {
+    jar.delete(CHANCES_COOKIE);
     // Unlocks one sign-up for the next 30 minutes.
     jar.set(PASS_COOKIE, sign({ kind: "pass", id: updated.id }, 1800), {
       httpOnly: true,

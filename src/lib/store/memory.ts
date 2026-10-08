@@ -164,8 +164,8 @@ export function memoryStore(): Store & {
       return state().postcodes.get(`${cc}:${area}`) ?? null;
     },
 
-    async countAttemptsSince(ipHash, since) {
-      return [...state().attempts.values()].filter((a) => a.ip_hash === ipHash && a.created_at >= since).length;
+    async countUnpassedAttempts(ipHash) {
+      return [...state().attempts.values()].filter((a) => a.ip_hash === ipHash && a.status !== "passed").length;
     },
 
     async createAttempt(a) {

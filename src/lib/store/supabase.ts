@@ -43,12 +43,12 @@ export function supabaseStore(): Store {
       );
     },
 
-    async countAttemptsSince(ipHash, sinceIso) {
+    async countUnpassedAttempts(ipHash) {
       const { count, error } = await db
         .from("quiz_attempts")
         .select("id", { count: "exact", head: true })
         .eq("ip_hash", ipHash)
-        .gte("created_at", sinceIso);
+        .neq("status", "passed");
       if (error) throw new Error(error.message);
       return count ?? 0;
     },

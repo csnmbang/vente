@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { DEMO, EMAIL_ENABLED, QUIZ } from "@/lib/config";
 import { verify } from "@/lib/crypto";
-import { PASS_COOKIE, questionText, QUIZ_COOKIE } from "@/lib/quiz";
+import { chancesUsed, CONTACT_EMAIL, PASS_COOKIE, questionText, QUIZ_COOKIE } from "@/lib/quiz";
 import { store } from "@/lib/store";
 import { verdict } from "@/lib/verdict";
 import ShareButton from "./ShareButton";
@@ -54,6 +54,7 @@ async function Result({ params }: { params: Promise<{ id: string }> }) {
   const total = attempt.question_ids.length;
   const v = verdict(score, total);
   const missed = attempt.question_ids.filter((_, i) => !attempt.results[i]);
+  const quedan = isOwner && attempt.status === "failed" ? Math.max(0, QUIZ.maxChances - (await chancesUsed())) : 0;
 
   return (
     <>
@@ -112,12 +113,20 @@ async function Result({ params }: { params: Promise<{ id: string }> }) {
       {isOwner && attempt.status === "failed" && (
         <div className="card mt-8 p-5">
           <p className="font-bold">
-            Necesitas {QUIZ.passMark} de {QUIZ.questions} aciertos para apuntarte. Puedes repetir el test varias veces
-            al día.
+            Necesitas {QUIZ.passMark} de {QUIZ.questions} aciertos para apuntarte.{" "}
+            {quedan > 0
+              ? `Te queda ${quedan} ${quedan === 1 ? "intento" : "intentos"}.`
+              : "Ya has usado tus intentos. Si eres de aquí y crees que es un error, escríbenos."}
           </p>
-          <Link href="/quiz" className="btn btn-rojo mt-4 w-full">
-            Repetir el test
-          </Link>
+          {quedan > 0 ? (
+            <Link href="/quiz" className="btn btn-rojo mt-4 w-full">
+              Repetir el test
+            </Link>
+          ) : (
+            <a href={`mailto:${CONTACT_EMAIL}?subject=Vente%3A%20el%20test`} className="btn btn-rojo mt-4 w-full">
+              Escribir a {CONTACT_EMAIL}
+            </a>
+          )}
         </div>
       )}
 

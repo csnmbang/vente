@@ -81,7 +81,8 @@ export interface Store {
   findPostcode(countryCode: string, area: string): Promise<Postcode | null>;
 
   // quiz
-  countAttemptsSince(ipHash: string, sinceIso: string): Promise<number>;
+  /** Attempts from this connection that haven't passed (failed or abandoned). */
+  countUnpassedAttempts(ipHash: string): Promise<number>;
   createAttempt(a: NewAttempt): Promise<Attempt>;
   getAttempt(id: string): Promise<Attempt | null>;
   /** Applies `patch` only if the attempt is still at `expectedIndex` and in progress. */

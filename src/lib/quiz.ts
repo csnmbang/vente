@@ -1,11 +1,24 @@
 import "server-only";
 import { randomInt } from "node:crypto";
 import { QUESTIONS, QUESTIONS_BY_ID } from "@/content/questions";
+import { cookies } from "next/headers";
 import { QUIZ } from "./config";
+import { clientIpHash } from "./request";
+import { store } from "./store";
 import type { Attempt } from "./store";
 
 export const QUIZ_COOKIE = "vente_quiz";
 export const PASS_COOKIE = "vente_pass";
+/** Tries used in this browser that didn't pass. Backs up the per-connection count. */
+export const CHANCES_COOKIE = "vente_intentos";
+export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hola@vengavente.com";
+
+/** How many tries this person has used without passing (connection or browser, whichever is higher). */
+export async function chancesUsed(): Promise<number> {
+  const fromBrowser = Number((await cookies()).get(CHANCES_COOKIE)?.value) || 0;
+  const fromConnection = await store().countUnpassedAttempts(await clientIpHash());
+  return Math.max(fromBrowser, fromConnection);
+}
 
 function shuffle<T>(xs: T[]): T[] {
   const a = [...xs];
