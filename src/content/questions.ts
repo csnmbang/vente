@@ -122,7 +122,7 @@ export const QUESTIONS: Question[] = [
   {
     id: "simpson-hora",
     category: "tele",
-    question: "¿A qué hora echaban Los Simpson en Antena 3?",
+    question: "¿A qué hora ponían Los Simpson en Antena 3?",
     options: ["A las 12h", "A las 13h", "A las 14h", "A las 15h"],
     answer: "A las 14h",
   },
