@@ -8,6 +8,9 @@ const hmac = (data: string) =>
 /** One-way hash of an IP so we can rate-limit without storing the IP. */
 export const hashIp = (ip: string) => hmac(`ip:${ip}`);
 
+/** One-way hash of an email address, for rate limits that mustn't store it. */
+export const hashEmail = (email: string) => hmac(`email:${email.trim().toLowerCase()}`);
+
 /** Signed, expiring token: `<payload>.<signature>`, URL-safe. */
 export function sign(payload: Record<string, unknown>, ttlSeconds: number): string {
   const body = Buffer.from(

@@ -4,6 +4,7 @@ import { sign, verify } from "@/lib/crypto";
 import { deleteEmail, sendEmail } from "@/lib/email";
 import { fail, json } from "@/lib/request";
 import { refrescarMapa } from "@/lib/mapa-cache";
+import { puedeMandarCorreo } from "@/lib/limite-correos";
 import { store } from "@/lib/store";
 
 const Body = z.union([
@@ -28,6 +29,7 @@ export async function POST(req: Request) {
   if (!EMAIL_ENABLED) {
     return fail(`Ahora mismo no podemos mandar correos. Escríbenos a ${process.env.NEXT_PUBLIC_CONTACT_EMAIL}.`, 503);
   }
+  if (!(await puedeMandarCorreo(body.data.email))) return fail("Has pedido demasiados correos hoy. Inténtalo mañana o escríbenos a hola@vengavente.com.", 429);
   // Same answer whether or not the email exists, so nobody can check who's in.
   const signup = await store().findSignupByEmail(body.data.email);
   if (signup) {

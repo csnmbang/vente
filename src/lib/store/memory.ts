@@ -20,6 +20,7 @@ type DemoState = {
   signups: Map<string, Signup & { ip_hash: string | null }>;
   messages: { id: number; city_id: number; signup_id: string; body: string; created_at: string; hidden_at: string | null }[];
   reports: { message_id: number; reporter_id: string }[];
+  emailSends: { ip_hash: string; email_hash: string; created_at: string }[];
 };
 
 const g = globalThis as unknown as { __venteDemo?: DemoState };
@@ -152,7 +153,7 @@ function seedChat(state: DemoState) {
 function state(): DemoState {
   if (!g.__venteDemo) {
     g.__venteDemo = {
-      places: loadPlaces(), postcodes: new Map(), attempts: new Map(), signups: new Map(), messages: [], reports: [],
+      places: loadPlaces(), postcodes: new Map(), attempts: new Map(), signups: new Map(), messages: [], reports: [], emailSends: [],
     };
     seed(g.__venteDemo);
     seedChat(g.__venteDemo);
@@ -346,6 +347,16 @@ export function memoryStore(): Store & {
     async banSignup(signupId) {
       const s = state().signups.get(signupId);
       if (s) s.banned_at = new Date().toISOString();
+    },
+
+    async countEmailSends(by, since) {
+      return state().emailSends.filter(
+        (e) => e.created_at >= since && ("ipHash" in by ? e.ip_hash === by.ipHash : e.email_hash === by.emailHash),
+      ).length;
+    },
+
+    async recordEmailSend(ipHash, emailHash) {
+      state().emailSends.push({ ip_hash: ipHash, email_hash: emailHash, created_at: new Date().toISOString() });
     },
 
     async adminStats(since): Promise<AdminStats> {

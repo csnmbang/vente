@@ -62,7 +62,9 @@ export default function PrivacyPage() {
         <p>
           Guardamos tus respuestas y tu nota para que funcione el enlace de resultado que
           compartes. Para frenar trampas y spam guardamos también una huella cifrada de tu
-          conexión (no tu IP), que borramos a los 7 días.
+          conexión (no tu IP), que borramos a los 7 días. Cuando pides un enlace por correo (para entrar o
+          para borrar tus datos), guardamos durante 2 días una huella cifrada de tu conexión y de tu
+          correo, para evitar abusos.
         </p>
       </Section>
 

@@ -93,6 +93,9 @@ traffic is mobile, arriving from a link in a TikTok bio.
    missing key ⇒ 404, data never sent). Vercel Web Analytics for visits.
    `/entrar` ("Ya estoy apuntado"): email link that opens the map on a new
    device without the quiz; same answer whether or not the email exists.
+   Email-sending forms (`/entrar`, deletion) are limited to 5/day per
+   hashed connection and 3/day per hashed address (`email_sends`,
+   migration 0004, rows kept 2 days).
 6. **City chat** (`/chat`, built before launch instead of roadmap order) —
    one group chat per metro area (your city + cities abroad within 40 km,
    `CHAT.areaKm`), for confirmed members (signed `vente_sesion`

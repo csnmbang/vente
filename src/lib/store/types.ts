@@ -146,6 +146,10 @@ export interface Store {
   countMessagesSince(signupId: string, sinceIso: string): Promise<number>;
   reportMessage(messageId: number, reporterId: string): Promise<void>;
 
+  // email limits ("Ya estoy apuntado", "Borrar mis datos")
+  countEmailSends(by: { ipHash: string } | { emailHash: string }, sinceIso: string): Promise<number>;
+  recordEmailSend(ipHash: string, emailHash: string): Promise<void>;
+
   // admin
   adminStats(sinceIso: string): Promise<AdminStats>;
   reportedMessages(): Promise<ReportedMessage[]>;

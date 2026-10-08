@@ -7,6 +7,7 @@ import { loginEmail, sendEmail } from "@/lib/email";
 import { refrescarMapa } from "@/lib/mapa-cache";
 import { unlockMap } from "@/lib/quiz";
 import { fail, json } from "@/lib/request";
+import { puedeMandarCorreo } from "@/lib/limite-correos";
 import { store, type Signup } from "@/lib/store";
 import { recordarApuntado } from "@/lib/yo-server";
 
@@ -31,6 +32,7 @@ export async function POST(req: Request) {
     return json({ status: "unlocked" });
   }
 
+  if (!(await puedeMandarCorreo(body.data.email))) return fail("Has pedido demasiados correos hoy. Inténtalo mañana o escríbenos a hola@vengavente.com.", 429);
   if (signup) {
     const token = sign({ kind: "entrar", id: signup.id }, 24 * 3600);
     const m = loginEmail(`${config.siteUrl}/api/entrar?token=${encodeURIComponent(token)}`);

@@ -208,6 +208,21 @@ export function supabaseStore(): Store {
       must(await db.from("signups").update({ banned_at: new Date().toISOString() }).eq("id", signupId));
     },
 
+    async countEmailSends(by, since) {
+      const [col, val] = "ipHash" in by ? ["ip_hash", by.ipHash] : ["email_hash", by.emailHash];
+      const { count, error } = await db
+        .from("email_sends")
+        .select("id", { count: "exact", head: true })
+        .eq(col, val)
+        .gte("created_at", since);
+      if (error) throw new Error(error.message);
+      return count ?? 0;
+    },
+
+    async recordEmailSend(ipHash, emailHash) {
+      must(await db.from("email_sends").insert({ ip_hash: ipHash, email_hash: emailHash }));
+    },
+
     async adminStats(since) {
       const count = async (table: string, f: (q: any) => any = (q) => q) => { // eslint-disable-line @typescript-eslint/no-explicit-any
         const { count, error } = await f(db.from(table).select("id", { count: "exact", head: true }));

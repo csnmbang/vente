@@ -48,7 +48,7 @@ Done when you see the repo at github.com/<your-user>/vente.
    - Open `supabase/migrations/0001_init.sql` from the project, copy
      everything, paste, click **Run**. It should say "Success".
    - New query again, same with `0002_province_counts.sql`, then
-     `0003_chat.sql`.
+     `0003_chat.sql`, `0004_email_limits.sql`.
    - Check: left menu **Table Editor** shows `cities`, `postcodes`,
      `quiz_attempts`, `signups`.
 6. Copy the two values:
