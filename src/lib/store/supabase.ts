@@ -1,7 +1,7 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import { config } from "../config";
-import type { Attempt, CityCount, CityProvinceCount, Place, Signup, Store, ZoneCount } from "./types";
+import type { AdminStats, Attempt, CityCount, CityProvinceCount, Place, Signup, Store, ZoneCount } from "./types";
 
 const PLACE_COLS =
   "id,name,country_code,admin1_name,admin2_name,lat,lng,population,is_abroad,is_es_municipio";
@@ -139,6 +139,32 @@ export function supabaseStore(): Store {
 
     async cityProvinceCounts() {
       return (must(await db.from("city_province_counts").select("*")) ?? []) as CityProvinceCount[];
+    },
+
+    async adminStats(since) {
+      const count = async (table: string, f: (q: any) => any = (q) => q) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+        const { count, error } = await f(db.from(table).select("id", { count: "exact", head: true }));
+        if (error) throw new Error(error.message);
+        return (count as number) ?? 0;
+      };
+      const [aT, aD, pT, pD, sT, sD, sC, recent] = await Promise.all([
+        count("quiz_attempts"),
+        count("quiz_attempts", (q) => q.gte("created_at", since)),
+        count("quiz_attempts", (q) => q.eq("status", "passed")),
+        count("quiz_attempts", (q) => q.eq("status", "passed").gte("created_at", since)),
+        count("signups"),
+        count("signups", (q) => q.gte("created_at", since)),
+        count("signups", (q) => q.not("confirmed_at", "is", null)),
+        db.from("signups")
+          .select("email, city_id, hometown_id, created_at, confirmed_at")
+          .order("created_at", { ascending: false })
+          .limit(20),
+      ]);
+      return {
+        attempts: { total: aT, day: aD, passedTotal: pT, passedDay: pD },
+        signups: { total: sT, day: sD, confirmed: sC },
+        recent: must(recent) ?? [],
+      } as AdminStats;
     },
 
     async provinceTotal(provincia) {

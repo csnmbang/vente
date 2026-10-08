@@ -74,6 +74,12 @@ export type ZoneCount = {
   people: number;
 };
 
+export type AdminStats = {
+  attempts: { total: number; day: number; passedTotal: number; passedDay: number };
+  signups: { total: number; day: number; confirmed: number };
+  recent: Pick<Signup, "email" | "city_id" | "hometown_id" | "created_at" | "confirmed_at">[];
+};
+
 export interface Store {
   // places
   searchPlaces(query: string, scope: "abroad" | "es", limit: number): Promise<Place[]>;
@@ -105,4 +111,7 @@ export interface Store {
   cityProvinceCounts(): Promise<CityProvinceCount[]>;
   /** Confirmed sign-ups from this province, anywhere. */
   provinceTotal(provincia: string): Promise<number>;
+
+  // admin
+  adminStats(sinceIso: string): Promise<AdminStats>;
 }

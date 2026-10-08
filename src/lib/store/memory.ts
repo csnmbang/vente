@@ -4,7 +4,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { normalizeText } from "../geo";
 import type {
-  Attempt, CityCount, CityProvinceCount, Place, Postcode, Signup, Store, ZoneCount,
+  AdminStats, Attempt, CityCount, CityProvinceCount, Place, Postcode, Signup, Store, ZoneCount,
 } from "./types";
 
 /**
@@ -253,6 +253,25 @@ export function memoryStore(): Store & {
         counts.set(key, c);
       }
       return [...counts.values()];
+    },
+
+    async adminStats(since): Promise<AdminStats> {
+      const at = [...state().attempts.values()];
+      const su = [...state().signups.values()];
+      return {
+        attempts: {
+          total: at.length,
+          day: at.filter((a) => a.created_at >= since).length,
+          passedTotal: at.filter((a) => a.status === "passed").length,
+          passedDay: at.filter((a) => a.status === "passed" && a.created_at >= since).length,
+        },
+        signups: {
+          total: su.length,
+          day: su.filter((s) => s.created_at >= since).length,
+          confirmed: su.filter((s) => s.confirmed_at).length,
+        },
+        recent: su.sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 20),
+      };
     },
 
     async provinceTotal(provincia) {

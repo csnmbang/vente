@@ -89,7 +89,11 @@ traffic is mobile, arriving from a link in a TikTok bio.
    No individual people. Zoomed out: one dot per city, sized
    by count. Zoomed in: one dot per postcode area (shown even with 1 person),
    coloured from light red (1) to very dark red (100+).
-5. **Privacy page** (`/privacidad`) — what is stored and why, and how to
+5. **Owner tools** — `/admin?clave=ADMIN_KEY` (private numbers; wrong or
+   missing key ⇒ 404, data never sent). Vercel Web Analytics for visits.
+   `/entrar` ("Ya estoy apuntado"): email link that opens the map on a new
+   device without the quiz; same answer whether or not the email exists.
+6. **Privacy page** (`/privacidad`) — what is stored and why, and how to
    request deletion.
 
 ## Roadmap (in order, one at a time; originally "not in v1")

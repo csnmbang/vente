@@ -4,8 +4,7 @@ import DeleteRequest from "./DeleteRequest";
 
 export const metadata: Metadata = { title: "Privacidad · Vente" };
 
-// TODO(owner): put the name of the person responsible for the data here.
-const RESPONSABLE = "el equipo de Vente";
+const RESPONSABLE = "CSN Solutions LLC";
 const CONTACT = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hola@vengavente.com";
 
 // Keep this page in sync with what we actually store (see CLAUDE.md).

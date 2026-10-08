@@ -25,6 +25,9 @@ export default function Home() {
         <Link href="/quiz" className="btn btn-rojo mt-5 w-full">
           Empezar el test
         </Link>
+        <Link href="/entrar" className="mt-3 block text-center text-sm font-bold underline">
+          Ya estoy apuntado
+        </Link>
       </div>
 
       <Link href="/mapa" className="btn btn-blanco mt-4 w-full">

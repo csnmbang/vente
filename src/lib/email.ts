@@ -58,3 +58,14 @@ export function deleteEmail(link: string) {
     text: `Para borrar tus datos de Vente, abre este enlace (caduca en 24 h): ${link}`,
   };
 }
+
+export function loginEmail(link: string) {
+  return {
+    subject: "Tu enlace para entrar en Vente",
+    html: layout(`
+      <p>Pulsa el botón para ver el mapa de Vente en este dispositivo.</p>
+      ${button(link, "Entrar en Vente")}
+      <p style="font-size:14px;color:#6f6676">El enlace caduca en 24 horas. Si no lo has pedido tú, ignora este correo.</p>`),
+    text: `Para entrar en Vente, abre este enlace (caduca en 24 h): ${link}`,
+  };
+}
