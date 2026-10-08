@@ -93,7 +93,14 @@ traffic is mobile, arriving from a link in a TikTok bio.
    missing key ⇒ 404, data never sent). Vercel Web Analytics for visits.
    `/entrar` ("Ya estoy apuntado"): email link that opens the map on a new
    device without the quiz; same answer whether or not the email exists.
-6. **Privacy page** (`/privacidad`) — what is stored and why, and how to
+6. **City chat** (`/chat`, built before launch instead of roadmap order) —
+   one group chat per city for confirmed members (signed `vente_sesion`
+   cookie, set at sign-up, confirmation and `/entrar`). Nickname + pueblo,
+   never the email. Text only, no links, 500 chars, 50 messages/day.
+   Polling every 4 s through `/api/chat` (the browser never talks to
+   Supabase). Reports go to `/admin`, where the owner hides messages or
+   bans people (`banned_at`). Tables in migration 0003.
+7. **Privacy page** (`/privacidad`) — what is stored and why, and how to
    request deletion.
 
 ## Roadmap (in order, one at a time; originally "not in v1")
@@ -134,7 +141,7 @@ traffic is mobile, arriving from a link in a TikTok bio.
    Store and send only a neighbourhood-level blurred position with a stable
    per-person offset; exact coordinates never stored or sent. Distances via
    routes. Block and report on every profile.
-5. **Chat with people nearby** — a nearby grid of verified members with their
+5. **Private chat with people nearby** (the city group chat already exists) — a nearby grid of verified members with their
    dot on ("en tu zona", "en tu ciudad", "cerca"), distances as routes, never
    metres; paisanos (same pueblo, de al lado, provincia) highlighted first.
    One-to-one text chat: you can send one message, and the chat opens when

@@ -27,7 +27,7 @@ First time? Follow the beginner guide in [docs/SETUP.md](docs/SETUP.md). The sho
 
 1. Create a project at supabase.com. **Region: Central EU (Frankfurt)**.
 2. SQL Editor → paste each file in `supabase/migrations/` in order
-   (`0001_init.sql`, then `0002_province_counts.sql`, …) → Run.
+   (`0001_init.sql`, `0002_province_counts.sql`, `0003_chat.sql`, …) → Run.
    If it complains about `pg_cron`, enable it under Database → Extensions and
    run the file again.
 3. Project Settings → API: copy the **Project URL** and the **service_role**

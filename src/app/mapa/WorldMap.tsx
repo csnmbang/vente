@@ -252,8 +252,12 @@ export default function WorldMap() {
                 : "Cargando el mapa…"}
             </p>
           </div>
-          {/* Already on Vente: no need to invite them to sign up. */}
-          {!yo?.apuntado && (
+          {/* Already on Vente: the chat instead of an invitation to sign up. */}
+          {yo?.apuntado ? (
+            <Link href="/chat" className="btn btn-rojo min-h-0 px-4 py-2 text-base">
+              Chat
+            </Link>
+          ) : (
             <Link href="/quiz" className="btn btn-rojo min-h-0 px-4 py-2 text-base">
               Apuntarme
             </Link>

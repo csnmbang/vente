@@ -70,6 +70,9 @@ export default function SignupForm({ emailEnabled, demo }: { emailEnabled: boole
     ) : (
       <div className="mt-5 rounded-xl bg-amarillo p-4">
         <p className="text-lg font-extrabold">Ya estás en el mapa</p>
+        <Link href="/chat" className="btn btn-blanco mt-3 w-full">
+          Entrar en el chat de tu ciudad
+        </Link>
         {done.paisanos && <p className="mt-1 font-bold">{lineaPaisanos(done.paisanos)}</p>}
         <Link href="/mapa" className="btn btn-rojo mt-3 w-full">
           Ver el mapa

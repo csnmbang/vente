@@ -1,7 +1,7 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import { config } from "../config";
-import type { AdminStats, Attempt, CityCount, CityProvinceCount, Place, Signup, Store, ZoneCount } from "./types";
+import type { AdminStats, Attempt, ChatMessage, CityCount, ReportedMessage, CityProvinceCount, Place, Signup, Store, ZoneCount } from "./types";
 
 const PLACE_COLS =
   "id,name,country_code,admin1_name,admin2_name,lat,lng,population,is_abroad,is_es_municipio";
@@ -139,6 +139,51 @@ export function supabaseStore(): Store {
 
     async cityProvinceCounts() {
       return (must(await db.from("city_province_counts").select("*")) ?? []) as CityProvinceCount[];
+    },
+
+    async setAlias(signupId, alias) {
+      must(await db.from("signups").update({ alias }).eq("id", signupId));
+    },
+
+    async chatMessages(cityId, afterId, limit) {
+      let q = db.from("chat_messages").select("id, signup_id, body, created_at, alias, pueblo").eq("city_id", cityId);
+      if (afterId !== null) q = q.gt("id", afterId);
+      const rows = (must(await q.order("id", { ascending: false }).limit(limit)) ?? []) as ChatMessage[];
+      return rows.reverse();
+    },
+
+    async addMessage(cityId, signupId, body) {
+      must(await db.from("messages").insert({ city_id: cityId, signup_id: signupId, body }));
+    },
+
+    async countMessagesSince(signupId, since) {
+      const { count, error } = await db
+        .from("messages")
+        .select("id", { count: "exact", head: true })
+        .eq("signup_id", signupId)
+        .gte("created_at", since);
+      if (error) throw new Error(error.message);
+      return count ?? 0;
+    },
+
+    async reportMessage(messageId, reporterId) {
+      // Reporting twice is fine: the unique constraint keeps one row.
+      const { error } = await db
+        .from("reports")
+        .upsert({ message_id: messageId, reporter_id: reporterId }, { onConflict: "message_id,reporter_id", ignoreDuplicates: true });
+      if (error) throw new Error(error.message);
+    },
+
+    async reportedMessages() {
+      return (must(await db.from("reported_messages").select("*").order("reports", { ascending: false })) ?? []) as ReportedMessage[];
+    },
+
+    async hideMessage(messageId) {
+      must(await db.from("messages").update({ hidden_at: new Date().toISOString() }).eq("id", messageId));
+    },
+
+    async banSignup(signupId) {
+      must(await db.from("signups").update({ banned_at: new Date().toISOString() }).eq("id", signupId));
     },
 
     async adminStats(since) {

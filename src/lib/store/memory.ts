@@ -4,7 +4,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { normalizeText } from "../geo";
 import type {
-  AdminStats, Attempt, CityCount, CityProvinceCount, Place, Postcode, Signup, Store, ZoneCount,
+  AdminStats, Attempt, ChatMessage, CityCount, CityProvinceCount, ReportedMessage, Place, Postcode, Signup, Store, ZoneCount,
 } from "./types";
 
 /**
@@ -18,6 +18,8 @@ type DemoState = {
   postcodes: Map<string, Postcode>;
   attempts: Map<string, Attempt>;
   signups: Map<string, Signup & { ip_hash: string | null }>;
+  messages: { id: number; city_id: number; signup_id: string; body: string; created_at: string; hidden_at: string | null }[];
+  reports: { message_id: number; reporter_id: string }[];
 };
 
 const g = globalThis as unknown as { __venteDemo?: DemoState };
@@ -105,6 +107,7 @@ function seed(state: DemoState) {
         id, email: `demo${n++}@example.com`, city_id: city.id, postcode_id: pc?.id ?? null,
         hometown_id: hometowns[(n * 7919) % hometowns.length].id, attempt_id: randomUUID(),
         confirmed_at: new Date().toISOString(), created_at: new Date().toISOString(), ip_hash: null,
+        alias: null, banned_at: null,
       });
     }
   }
@@ -126,10 +129,33 @@ function demoPostcode(state: DemoState, cc: string, area: string, near: Place): 
   return pc;
 }
 
+// A few demo chat messages in London, so the chat isn't empty locally.
+const DEMO_CHAT: [alias: string, body: string][] = [
+  ["Lucía", "¿Alguien sabe dónde venden jamón decente por Hackney?"],
+  ["Pablo", "En Brindisa, en Borough Market. Caro, pero vale la pena."],
+  ["Lucía", "Gracias. ¿Hacemos algo para ver el partido el domingo?"],
+];
+
+function seedChat(state: DemoState) {
+  const london = [...state.signups.values()].filter((s) => state.places.get(s.city_id)?.name === "Londres");
+  DEMO_CHAT.forEach(([alias, body], i) => {
+    const author = london[alias === "Lucía" ? 0 : 1];
+    if (!author) return;
+    author.alias = alias;
+    state.messages.push({
+      id: i + 1, city_id: author.city_id, signup_id: author.id, body,
+      created_at: new Date(Date.now() - (DEMO_CHAT.length - i) * 600_000).toISOString(), hidden_at: null,
+    });
+  });
+}
+
 function state(): DemoState {
   if (!g.__venteDemo) {
-    g.__venteDemo = { places: loadPlaces(), postcodes: new Map(), attempts: new Map(), signups: new Map() };
+    g.__venteDemo = {
+      places: loadPlaces(), postcodes: new Map(), attempts: new Map(), signups: new Map(), messages: [], reports: [],
+    };
     seed(g.__venteDemo);
+    seedChat(g.__venteDemo);
   }
   return g.__venteDemo;
 }
@@ -217,7 +243,7 @@ export function memoryStore(): Store & {
     },
 
     async createSignup(s) {
-      const row = { ...s, id: randomUUID(), created_at: new Date().toISOString(), ip_hash: null };
+      const row = { ...s, id: randomUUID(), created_at: new Date().toISOString(), ip_hash: null, alias: null, banned_at: null };
       state().signups.set(row.id, row);
       return row;
     },
@@ -229,6 +255,7 @@ export function memoryStore(): Store & {
 
     async deleteSignup(id) {
       state().signups.delete(id);
+      state().messages = state().messages.filter((m) => m.signup_id !== id);
     },
 
     async cityCounts() {
@@ -253,6 +280,64 @@ export function memoryStore(): Store & {
         counts.set(key, c);
       }
       return [...counts.values()];
+    },
+
+    async setAlias(signupId, alias) {
+      const s = state().signups.get(signupId);
+      if (s) s.alias = alias;
+    },
+
+    async chatMessages(cityId, afterId, limit) {
+      const visible: ChatMessage[] = [];
+      for (const m of state().messages) {
+        const s = state().signups.get(m.signup_id);
+        if (m.city_id !== cityId || m.hidden_at || !s || s.banned_at) continue;
+        if (afterId !== null && m.id <= afterId) continue;
+        visible.push({
+          id: m.id, signup_id: m.signup_id, body: m.body, created_at: m.created_at,
+          alias: s.alias, pueblo: state().places.get(s.hometown_id)?.name ?? "",
+        });
+      }
+      return visible.slice(-limit);
+    },
+
+    async addMessage(cityId, signupId, body) {
+      const id = (state().messages.at(-1)?.id ?? 0) + 1;
+      state().messages.push({ id, city_id: cityId, signup_id: signupId, body, created_at: new Date().toISOString(), hidden_at: null });
+    },
+
+    async countMessagesSince(signupId, since) {
+      return state().messages.filter((m) => m.signup_id === signupId && m.created_at >= since).length;
+    },
+
+    async reportMessage(messageId, reporterId) {
+      if (!state().reports.some((r) => r.message_id === messageId && r.reporter_id === reporterId)) {
+        state().reports.push({ message_id: messageId, reporter_id: reporterId });
+      }
+    },
+
+    async reportedMessages() {
+      const out: ReportedMessage[] = [];
+      for (const m of state().messages) {
+        const n = state().reports.filter((r) => r.message_id === m.id).length;
+        if (!n || m.hidden_at) continue;
+        const s = state().signups.get(m.signup_id);
+        out.push({
+          id: m.id, body: m.body, created_at: m.created_at, signup_id: m.signup_id,
+          alias: s?.alias ?? null, city: state().places.get(m.city_id)?.name ?? "", reports: n,
+        });
+      }
+      return out.sort((a, b) => b.reports - a.reports);
+    },
+
+    async hideMessage(messageId) {
+      const m = state().messages.find((x) => x.id === messageId);
+      if (m) m.hidden_at = new Date().toISOString();
+    },
+
+    async banSignup(signupId) {
+      const s = state().signups.get(signupId);
+      if (s) s.banned_at = new Date().toISOString();
     },
 
     async adminStats(since): Promise<AdminStats> {

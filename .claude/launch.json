@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 3000
+    },
+    {
+      "name": "vente-demo",
+      "runtimeExecutable": "env",
+      "runtimeArgs": ["SUPABASE_URL=", "SUPABASE_SERVICE_ROLE_KEY=", "ADMIN_KEY=demo", "npx", "next", "dev", "-p", "3001"],
+      "port": 3001
     }
   ]
 }

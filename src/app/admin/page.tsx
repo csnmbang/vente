@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
-import { timingSafeEqual } from "node:crypto";
 import { Suspense } from "react";
 import { PROVINCIAS } from "@/content/provincias";
+import { claveValida } from "@/lib/admin";
 import { store } from "@/lib/store";
 
 export const metadata: Metadata = { title: "Admin · Vente", robots: { index: false, follow: false } };
@@ -17,14 +17,6 @@ export default function AdminPage({ searchParams }: PageProps<"/admin">) {
       </Suspense>
     </main>
   );
-}
-
-function claveValida(clave: unknown): boolean {
-  const real = process.env.ADMIN_KEY;
-  if (!real || typeof clave !== "string") return false;
-  const a = Buffer.from(clave);
-  const b = Buffer.from(real);
-  return a.length === b.length && timingSafeEqual(a, b);
 }
 
 /** "carmen@gmail.com" → "ca•••@gmail.com" */
@@ -43,7 +35,12 @@ async function Panel({ searchParams }: { searchParams: Promise<Record<string, st
   const { clave } = await searchParams;
   if (!claveValida(clave)) notFound();
 
-  const [s, cities] = await Promise.all([store().adminStats(hace24h()), store().cityCounts()]);
+  const [s, cities, reportados] = await Promise.all([
+    store().adminStats(hace24h()),
+    store().cityCounts(),
+    store().reportedMessages(),
+  ]);
+  const moderar = `/api/admin/moderar?clave=${encodeURIComponent(String(clave))}`;
   const places = new Map(
     (await Promise.all(
       [...new Set(s.recent.flatMap((r) => [r.city_id, r.hometown_id]))].map((id) => store().getPlace(id)),
@@ -67,6 +64,32 @@ async function Panel({ searchParams }: { searchParams: Promise<Record<string, st
         <Dato titulo="Tests en total" valor={s.attempts.total} detalle={`aprueba el ${pct(s.attempts.passedTotal, s.attempts.total)}`} />
         <Dato titulo="Correos en total" valor={s.signups.total} detalle={`${s.signups.confirmed} confirmados`} />
       </div>
+
+      <h2 className="mt-8 font-display text-xl font-extrabold">
+        Mensajes reportados {reportados.length > 0 && `(${reportados.length})`}
+      </h2>
+      <ul className="mt-2 divide-y divide-tinta/10 rounded-xl border-2 border-tinta bg-white">
+        {reportados.length === 0 && <li className="p-3 text-gris">Ninguno.</li>}
+        {reportados.map((m) => (
+          <li key={m.id} className="p-3 text-sm">
+            <p className="whitespace-pre-wrap">«{m.body}»</p>
+            <p className="mt-1 text-gris">
+              {m.alias ?? "Sin apodo"} · chat de {m.city} · {hora(m.created_at)} · {m.reports}{" "}
+              {m.reports === 1 ? "reporte" : "reportes"}
+            </p>
+            <form method="post" action={moderar} className="mt-2 flex gap-2">
+              <input type="hidden" name="id" value={m.id} />
+              <input type="hidden" name="autor" value={m.signup_id} />
+              <button name="accion" value="ocultar" className="btn btn-blanco min-h-0 flex-1 py-1 text-sm">
+                Ocultar mensaje
+              </button>
+              <button name="accion" value="expulsar" className="btn btn-rojo min-h-0 flex-1 py-1 text-sm">
+                Expulsar del chat
+              </button>
+            </form>
+          </li>
+        ))}
+      </ul>
 
       <h2 className="mt-8 font-display text-xl font-extrabold">Últimas altas</h2>
       <ul className="mt-2 divide-y divide-tinta/10 rounded-xl border-2 border-tinta bg-white">

@@ -42,9 +42,19 @@ export default function PrivacyPage() {
         <p>
           Solo números: cuántas personas hay en cada ciudad y en cada zona de código postal, y en
           cada ciudad cuántas son de cada provincia (por ejemplo, 3 murcianos en Dublín). Tu pueblo
-          no se muestra a nadie. Nunca
+          no se muestra en el mapa. Nunca
           tu nombre, tu correo ni un punto tuyo. Si eres la única persona de Vente en tu código
           postal, en esa zona aparecerá un 1.
+        </p>
+      </Section>
+
+      <Section title="El chat">
+        <p>
+          Si entras en el chat de tu ciudad, guardamos tus mensajes y el apodo que elijas. Los ven
+          solo las personas apuntadas y confirmadas en tu misma ciudad, junto a tu apodo y tu
+          pueblo. Nunca se muestra tu correo. Si alguien reporta un mensaje, lo revisamos y podemos
+          ocultarlo o quitarte el acceso al chat. Si borras tus datos, se borran también tus
+          mensajes.
         </p>
       </Section>
 
