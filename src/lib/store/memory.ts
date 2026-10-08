@@ -2,7 +2,7 @@ import "server-only";
 import fs from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
-import { normalizeText } from "../geo";
+import { haversineKm, normalizeText } from "../geo";
 import type {
   AdminStats, Attempt, ChatMessage, CityCount, CityProvinceCount, ReportedMessage, Place, Postcode, Signup, Store, ZoneCount,
 } from "./types";
@@ -287,14 +287,22 @@ export function memoryStore(): Store & {
       if (s) s.alias = alias;
     },
 
-    async chatMessages(cityId, afterId, limit) {
+    async citiesNear(lat, lng, km) {
+      const out: { id: number; name: string; population: number }[] = [];
+      for (const p of state().places.values()) {
+        if (p.is_abroad && haversineKm(p, { lat, lng }) <= km) out.push({ id: p.id, name: p.name, population: p.population });
+      }
+      return out;
+    },
+
+    async chatMessages(cityIds, afterId, limit) {
       const visible: ChatMessage[] = [];
       for (const m of state().messages) {
         const s = state().signups.get(m.signup_id);
-        if (m.city_id !== cityId || m.hidden_at || !s || s.banned_at) continue;
+        if (!cityIds.includes(m.city_id) || m.hidden_at || !s || s.banned_at) continue;
         if (afterId !== null && m.id <= afterId) continue;
         visible.push({
-          id: m.id, signup_id: m.signup_id, body: m.body, created_at: m.created_at,
+          id: m.id, city_id: m.city_id, signup_id: m.signup_id, body: m.body, created_at: m.created_at,
           alias: s.alias, pueblo: state().places.get(s.hometown_id)?.name ?? "",
         });
       }

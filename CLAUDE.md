@@ -81,8 +81,8 @@ traffic is mobile, arriving from a link in a TikTok bio.
    Double opt-in: the email link confirms the sign-up; only confirmed
    sign-ups count on the map.
 4. **Map, unlocked by email** — locked until you pass the quiz **and** leave
-   your email (signed `vente_mapa` cookie, 1 year; also set by the
-   confirmation link). Locked visitors get a blurred map and only the totals
+   your email **and confirm it** (signed `vente_mapa` cookie, 1 year, set
+   by the confirmation link or `/entrar`). Locked visitors get a blurred map and only the totals
    ("Hay 198 españoles en 24 ciudades"); `/api/map` never sends details
    without the cookie. Two tries per person (`QUIZ.maxChances`), counted by
    hashed connection and a browser cookie; after that, write to hola@.
@@ -94,7 +94,8 @@ traffic is mobile, arriving from a link in a TikTok bio.
    `/entrar` ("Ya estoy apuntado"): email link that opens the map on a new
    device without the quiz; same answer whether or not the email exists.
 6. **City chat** (`/chat`, built before launch instead of roadmap order) —
-   one group chat per city for confirmed members (signed `vente_sesion`
+   one group chat per metro area (your city + cities abroad within 40 km,
+   `CHAT.areaKm`), for confirmed members (signed `vente_sesion`
    cookie, set at sign-up, confirmation and `/entrar`). Nickname + pueblo,
    never the email. Text only, no links, 500 chars, 50 messages/day.
    Polling every 4 s through `/api/chat` (the browser never talks to

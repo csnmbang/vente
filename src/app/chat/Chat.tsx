@@ -98,7 +98,7 @@ export default function Chat() {
           <Link href="/mapa" className="text-sm font-bold text-gris underline">
             Volver al mapa
           </Link>
-          <h1 className="font-display text-2xl font-extrabold leading-tight">El chat de {ciudad}</h1>
+          <h1 className="font-display text-2xl font-extrabold leading-tight">{ciudad} y alrededores</h1>
         </div>
         <Link href="/" className="font-display text-xl font-extrabold text-rojo">
           Vente
@@ -115,7 +115,11 @@ export default function Chat() {
           <div key={m.id} className={m.mio ? "ml-10 text-right" : "mr-10"}>
             {!m.mio && (
               <p className="text-xs font-bold">
-                {m.alias} <span className="font-normal text-gris">· de {m.pueblo}</span>
+                {m.alias}{" "}
+                <span className="font-normal text-gris">
+                  · de {m.pueblo}
+                  {m.ciudad && ` · en ${m.ciudad}`}
+                </span>
               </p>
             )}
             <p

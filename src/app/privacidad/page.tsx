@@ -51,8 +51,8 @@ export default function PrivacyPage() {
       <Section title="El chat">
         <p>
           Si entras en el chat de tu ciudad, guardamos tus mensajes y el apodo que elijas. Los ven
-          solo las personas apuntadas y confirmadas en tu misma ciudad, junto a tu apodo y tu
-          pueblo. Nunca se muestra tu correo. Si alguien reporta un mensaje, lo revisamos y podemos
+          solo las personas apuntadas y confirmadas que viven en tu ciudad o a menos de unos 40
+          km, junto a tu apodo, tu pueblo y la ciudad donde vives. Nunca se muestra tu correo. Si alguien reporta un mensaje, lo revisamos y podemos
           ocultarlo o quitarte el acceso al chat. Si borras tus datos, se borran también tus
           mensajes.
         </p>

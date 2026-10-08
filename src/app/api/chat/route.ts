@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { CHAT, ciudadDe, estadoChat, publico, tieneEnlace } from "@/lib/chat";
+import { CHAT, estadoChat, publico, tieneEnlace, zonaDe } from "@/lib/chat";
 import { fail, json } from "@/lib/request";
 import { store } from "@/lib/store";
 
@@ -8,12 +8,13 @@ export async function GET(req: Request) {
   const { estado, yo } = await estadoChat();
   if (estado !== "ok" || !yo) return json({ estado });
   const after = Number(new URL(req.url).searchParams.get("after")) || null;
-  const mensajes = await store().chatMessages(yo.city_id, after, CHAT.history);
+  const zona = await zonaDe(yo);
+  const mensajes = await store().chatMessages(zona.ids, after, CHAT.history);
   return json({
     estado,
-    ciudad: await ciudadDe(yo),
+    ciudad: zona.ciudad,
     alias: yo.alias,
-    mensajes: mensajes.map((m) => publico(m, yo)),
+    mensajes: mensajes.map((m) => publico(m, yo, zona)),
   });
 }
 

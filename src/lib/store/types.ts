@@ -58,6 +58,8 @@ export type NewSignup = Omit<Signup, "id" | "created_at" | "alias" | "banned_at"
 /** A chat message as the chat shows it: nickname and pueblo, never the email. */
 export type ChatMessage = {
   id: number;
+  /** Where the author lives (their city abroad). */
+  city_id: number;
   signup_id: string;
   body: string;
   created_at: string;
@@ -136,8 +138,10 @@ export interface Store {
 
   // chat (one group per city)
   setAlias(signupId: string, alias: string): Promise<void>;
-  /** Latest `limit` messages, or only those after `afterId`, oldest first. */
-  chatMessages(cityId: number, afterId: number | null, limit: number): Promise<ChatMessage[]>;
+  /** Cities abroad within `km` of a point: one chat covers a metro area. */
+  citiesNear(lat: number, lng: number, km: number): Promise<{ id: number; name: string; population: number }[]>;
+  /** Latest `limit` messages from these cities, or only those after `afterId`, oldest first. */
+  chatMessages(cityIds: number[], afterId: number | null, limit: number): Promise<ChatMessage[]>;
   addMessage(cityId: number, signupId: string, body: string): Promise<void>;
   countMessagesSince(signupId: string, sinceIso: string): Promise<number>;
   reportMessage(messageId: number, reporterId: string): Promise<void>;

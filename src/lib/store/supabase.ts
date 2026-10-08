@@ -1,6 +1,7 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import { config } from "../config";
+import { haversineKm } from "../geo";
 import type { AdminStats, Attempt, ChatMessage, CityCount, ReportedMessage, CityProvinceCount, Place, Signup, Store, ZoneCount } from "./types";
 
 const PLACE_COLS =
@@ -145,8 +146,29 @@ export function supabaseStore(): Store {
       must(await db.from("signups").update({ alias }).eq("id", signupId));
     },
 
-    async chatMessages(cityId, afterId, limit) {
-      let q = db.from("chat_messages").select("id, signup_id, body, created_at, alias, pueblo").eq("city_id", cityId);
+    async citiesNear(lat, lng, km) {
+      // Bounding box in the database, exact distance here.
+      const dLat = km / 111;
+      const dLng = km / (111 * Math.cos((lat * Math.PI) / 180));
+      const rows = (must(
+        await db
+          .from("cities")
+          .select("id, name, lat, lng, population")
+          .eq("is_abroad", true)
+          .gte("lat", lat - dLat).lte("lat", lat + dLat)
+          .gte("lng", lng - dLng).lte("lng", lng + dLng)
+          .limit(1000),
+      ) ?? []) as { id: number; name: string; lat: number; lng: number; population: number }[];
+      return rows
+        .filter((c) => haversineKm(c, { lat, lng }) <= km)
+        .map(({ id, name, population }) => ({ id, name, population }));
+    },
+
+    async chatMessages(cityIds, afterId, limit) {
+      let q = db
+        .from("chat_messages")
+        .select("id, city_id, signup_id, body, created_at, alias, pueblo")
+        .in("city_id", cityIds);
       if (afterId !== null) q = q.gt("id", afterId);
       const rows = (must(await q.order("id", { ascending: false }).limit(limit)) ?? []) as ChatMessage[];
       return rows.reverse();

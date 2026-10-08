@@ -65,7 +65,6 @@ export async function POST(req: Request) {
     const m = alreadyInEmail();
     await sendEmail(email, m.subject, m.html, m.text);
     jar.delete(PASS_COOKIE);
-    await unlockMap();
     return json({ status: "check-email" });
   }
 
@@ -90,7 +89,8 @@ export async function POST(req: Request) {
     throw e;
   }
   jar.delete(PASS_COOKIE);
-  await unlockMap();
+  // The map opens with the confirmation link (or straight away when there are no emails).
+  if (!EMAIL_ENABLED) await unlockMap();
   await iniciarSesion(signupId); // the chat still requires a confirmed email
   // Lets the map say how far other cities are from yours ("a un Alicante–Murcia de ti").
   // (Next URL-encodes cookie values itself, so pass plain JSON.)
