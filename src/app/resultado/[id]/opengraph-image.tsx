@@ -13,7 +13,8 @@ export default async function Image({ params }: { params: Promise<{ id: string }
   const { id } = await params;
   const attempt = /^[0-9a-f-]{36}$/i.test(id) ? await store().getAttempt(id) : null;
   const score = attempt && attempt.status !== "in_progress" ? attempt.correct_count : null;
-  const v = score === null ? null : verdict(score);
+  const total = attempt?.question_ids.length ?? 5;
+  const v = score === null ? null : verdict(score, total);
 
   return new ImageResponse(
     (
@@ -48,7 +49,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
         ) : (
           <div style={{ display: "flex", flexDirection: "column" }}>
             <div style={{ fontSize: 44, fontWeight: 700 }}>He sacado</div>
-            <div style={{ fontSize: 200, fontWeight: 800, lineHeight: 1 }}>{score}/10</div>
+            <div style={{ fontSize: 200, fontWeight: 800, lineHeight: 1 }}>{score}/{total}</div>
             <div style={{ fontSize: 48, fontWeight: 800 }}>{v}</div>
           </div>
         )}

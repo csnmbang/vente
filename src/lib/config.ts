@@ -22,10 +22,10 @@ export const config = {
 export const EMAIL_ENABLED = Boolean(config.resendKey);
 
 export const QUIZ = {
-  questions: 10,
+  questions: 5,
   seconds: 5,
   graceMs: 2000, // network slack on mobile + the short feedback flash
-  passMark: 8,
+  passMark: 4, // out of `questions`
   attemptsPerDay: 5,
 } as const;
 

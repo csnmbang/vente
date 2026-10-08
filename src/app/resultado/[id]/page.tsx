@@ -20,7 +20,7 @@ export async function generateMetadata({
   const { id } = await params;
   const attempt = UUID.test(id) ? await store().getAttempt(id) : null;
   if (!attempt || attempt.status === "in_progress") return { title: "Vente" };
-  const title = `He sacado ${attempt.correct_count}/10 en Vente`;
+  const title = `He sacado ${attempt.correct_count}/${attempt.question_ids.length} en Vente`;
   return {
     title,
     description: "Haz el test y ponte en el mapa de los españoles por el mundo.",
@@ -51,7 +51,8 @@ async function Result({ params }: { params: Promise<{ id: string }> }) {
   const canSignUp = isOwner && attempt.status === "passed" && !attempt.signup_used && pass?.id === id;
 
   const score = attempt.correct_count;
-  const v = verdict(score);
+  const total = attempt.question_ids.length;
+  const v = verdict(score, total);
   const missed = attempt.question_ids.filter((_, i) => !attempt.results[i]);
 
   return (
@@ -63,7 +64,7 @@ async function Result({ params }: { params: Promise<{ id: string }> }) {
         <p className="relative mt-8 text-lg font-bold">He sacado</p>
         <p className="relative font-display text-[7.5rem] font-extrabold leading-none tracking-tight">
           {score}
-          <span className="text-5xl opacity-80">/10</span>
+          <span className="text-5xl opacity-80">/{total}</span>
         </p>
         <p className="relative mt-2 text-2xl font-extrabold leading-tight">{v}</p>
         <div className="relative mt-8 flex items-end justify-between">
@@ -72,7 +73,7 @@ async function Result({ params }: { params: Promise<{ id: string }> }) {
         </div>
       </section>
 
-      <ShareButton score={score} />
+      <ShareButton score={score} total={total} />
 
       {isOwner && missed.length > 0 && (
         <section className="mt-6">
@@ -111,7 +112,7 @@ async function Result({ params }: { params: Promise<{ id: string }> }) {
       {isOwner && attempt.status === "failed" && (
         <div className="card mt-8 p-5">
           <p className="font-bold">
-            Necesitas {QUIZ.passMark} aciertos para apuntarte. Puedes repetir el test varias veces
+            Necesitas {QUIZ.passMark} de {QUIZ.questions} aciertos para apuntarte. Puedes repetir el test varias veces
             al día.
           </p>
           <Link href="/quiz" className="btn btn-rojo mt-4 w-full">

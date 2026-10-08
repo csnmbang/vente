@@ -70,8 +70,8 @@ export default function Quiz() {
       <div className="card p-6">
         <h1 className="font-display text-3xl font-extrabold">El test</h1>
         <ul className="mt-4 list-disc space-y-2 pl-5 text-lg">
-          <li>10 preguntas, 5 segundos cada una.</li>
-          <li>Necesitas 8 aciertos para apuntarte al mapa.</li>
+          <li>5 preguntas, 5 segundos cada una.</li>
+          <li>Necesitas 4 aciertos para apuntarte al mapa.</li>
           <li>Si se acaba el tiempo, cuenta como fallo.</li>
         </ul>
         <button

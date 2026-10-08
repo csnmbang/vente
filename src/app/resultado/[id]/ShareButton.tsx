@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 
-export default function ShareButton({ score }: { score: number }) {
+export default function ShareButton({ score, total }: { score: number; total: number }) {
   const [copied, setCopied] = useState(false);
 
   async function share() {
     const url = window.location.href;
-    const text = `He sacado ${score}/10 en el test de Vente.`;
+    const text = `He sacado ${score}/${total} en el test de Vente.`;
     if (navigator.share) {
       try {
         await navigator.share({ title: "Vente pa'cá", text, url });

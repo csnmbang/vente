@@ -19,7 +19,7 @@ export default function Home() {
       <div className="card mt-8 bg-white p-5">
         <p className="font-display text-xl font-bold">Primero, el test</p>
         <p className="mt-1 text-gris">
-          10 preguntas sobre crecer en España, con 5 segundos para cada una. Con 8 aciertos
+          5 preguntas sobre crecer en España, con 5 segundos para cada una. Con 4 aciertos
           puedes apuntarte al mapa.
         </p>
         <Link href="/quiz" className="btn btn-rojo mt-5 w-full">
