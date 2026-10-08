@@ -93,6 +93,7 @@ export async function POST(req: Request) {
   // (Next URL-encodes cookie values itself, so pass plain JSON.)
   jar.set(YO_COOKIE, JSON.stringify({
     ciudad: city.name, lat: city.lat, lng: city.lng, ...origen(hometown.admin2_name), apuntado: true,
+    confirmado: !EMAIL_ENABLED,
   } satisfies Yo), { path: "/", maxAge: YO_MAX_AGE, sameSite: "lax", secure: process.env.NODE_ENV === "production" });
 
   // "Ya hay 14 murcianos en Vente": others from your province, not counting you.

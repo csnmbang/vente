@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
@@ -8,7 +7,7 @@ import { loginEmail, sendEmail } from "@/lib/email";
 import { unlockMap } from "@/lib/quiz";
 import { fail, json } from "@/lib/request";
 import { store, type Signup } from "@/lib/store";
-import { origen, YO_COOKIE, YO_MAX_AGE, type Yo } from "@/lib/yo";
+import { recordarApuntado } from "@/lib/yo-server";
 
 /**
  * "Ya estoy apuntado": people already on Vente get a link by email that
@@ -50,14 +49,8 @@ export async function GET(req: NextRequest) {
   redirect("/mapa");
 }
 
-/** Open the map and remember the person's city and province on this device. */
+/** Open the map and remember the person on this device. */
 async function entrar(signup: Signup) {
   await unlockMap();
-  const [city, hometown] = await Promise.all([store().getPlace(signup.city_id), store().getPlace(signup.hometown_id)]);
-  if (!city) return;
-  (await cookies()).set(
-    YO_COOKIE,
-    JSON.stringify({ ciudad: city.name, lat: city.lat, lng: city.lng, ...origen(hometown?.admin2_name), apuntado: true } satisfies Yo),
-    { path: "/", maxAge: YO_MAX_AGE, sameSite: "lax", secure: process.env.NODE_ENV === "production" },
-  );
+  await recordarApuntado(signup, true);
 }

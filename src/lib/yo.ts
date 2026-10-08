@@ -15,6 +15,8 @@ export type Yo = {
   region: Comunidad | null;
   /** Set when this came from signing up: the reader is one of the people on the map. */
   apuntado?: boolean;
+  /** False until they click the confirmation email: they don't count on the map yet. */
+  confirmado?: boolean;
 };
 
 /** Home province and its comunidad, from a province key. */
@@ -39,6 +41,7 @@ export function decodeYo(raw: string | undefined | null): Yo | null {
     return {
       ciudad: v.ciudad, lat: v.lat, lng: v.lng, provincia: o.provincia,
       region: o.region ?? asComunidad(v.region), apuntado: v.apuntado === true,
+      confirmado: v.confirmado !== false,
     };
   } catch {
     return null;

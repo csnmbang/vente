@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { verify } from "@/lib/crypto";
 import { unlockMap } from "@/lib/quiz";
 import { store } from "@/lib/store";
+import { recordarApuntado } from "@/lib/yo-server";
 
 /** The link in the confirmation email lands here. */
 export async function GET(req: NextRequest) {
@@ -12,5 +13,6 @@ export async function GET(req: NextRequest) {
   if (!signup) redirect("/mapa?confirmacion=caducada");
   await store().confirmSignup(signup.id);
   await unlockMap(); // in case they open the email on another device
+  await recordarApuntado(signup, true);
   redirect("/mapa?bienvenida=1");
 }

@@ -66,7 +66,7 @@ export default function WorldMap() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setYo(readYo());
     const params = new URLSearchParams(window.location.search);
-    if (params.has("bienvenida")) setBanner("Correo confirmado. Ya estás en el mapa.");
+    if (params.has("bienvenida")) setBanner("Correo confirmado. Tu punto aparecerá en el mapa en unos minutos.");
     else if (params.has("confirmacion"))
       setBanner("El enlace ha caducado. Repite el test para apuntarte.");
   }, []);
@@ -252,10 +252,19 @@ export default function WorldMap() {
                 : "Cargando el mapa…"}
             </p>
           </div>
-          <Link href="/quiz" className="btn btn-rojo min-h-0 px-4 py-2 text-base">
-            Apuntarme
-          </Link>
+          {/* Already on Vente: no need to invite them to sign up. */}
+          {!yo?.apuntado && (
+            <Link href="/quiz" className="btn btn-rojo min-h-0 px-4 py-2 text-base">
+              Apuntarme
+            </Link>
+          )}
         </div>
+        {yo?.apuntado && !yo.confirmado && !banner && (
+          <div className="pointer-events-auto mx-auto mt-2 max-w-md rounded-xl border-[3px] border-tinta bg-amarillo p-3 text-sm">
+            <strong>Todavía no apareces en el mapa.</strong> Confirma tu correo con el enlace que te
+            hemos enviado (mira también en spam).
+          </div>
+        )}
         {banner && (
           <div className="pointer-events-auto mx-auto mt-2 max-w-md rounded-xl border-[3px] border-tinta bg-amarillo p-3 font-bold">
             {banner}

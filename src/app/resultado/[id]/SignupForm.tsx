@@ -57,11 +57,14 @@ export default function SignupForm({ emailEnabled, demo }: { emailEnabled: boole
   if (done) {
     return done.status === "check-email" ? (
       <div className="mt-5 rounded-xl bg-amarillo p-4">
-        <p className="text-lg font-extrabold">Mira tu correo</p>
+        <p className="text-lg font-extrabold">Último paso: confirma tu correo</p>
         <p className="mt-1">
-          Te hemos enviado un enlace a <strong>{done.email}</strong>. Al pulsarlo apareces en el
-          mapa. Si no lo ves, revisa la carpeta de spam.
+          <strong>No apareces en el mapa hasta que confirmes.</strong> Te hemos enviado un enlace a{" "}
+          <strong>{done.email}</strong>. Si no lo ves, revisa la carpeta de spam.
         </p>
+        <Link href="/mapa" className="btn btn-blanco mt-3 w-full">
+          Ver el mapa mientras tanto
+        </Link>
         {done.paisanos && <p className="mt-2 font-bold">{lineaPaisanos(done.paisanos)}</p>}
       </div>
     ) : (
