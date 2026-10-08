@@ -4,6 +4,7 @@ import { config, DEMO, EMAIL_ENABLED, SIGNUPS_PER_IP_PER_DAY } from "@/lib/confi
 import { sign, verify } from "@/lib/crypto";
 import { alreadyInEmail, confirmEmail, sendEmail } from "@/lib/email";
 import { haversineKm, postcodeArea } from "@/lib/geo";
+import { refrescarMapa } from "@/lib/mapa-cache";
 import { PASS_COOKIE, unlockMap } from "@/lib/quiz";
 import { clientIpHash, fail, json } from "@/lib/request";
 import { store } from "@/lib/store";
@@ -101,7 +102,10 @@ export async function POST(req: Request) {
   const total = await store().provinceTotal(provincia);
   const paisanos = { provincia, otros: Math.max(0, total - (EMAIL_ENABLED ? 0 : 1)) };
 
-  if (!EMAIL_ENABLED) return json({ status: "confirmed", paisanos });
+  if (!EMAIL_ENABLED) {
+    refrescarMapa(); // counted straight away when there are no emails
+    return json({ status: "confirmed", paisanos });
+  }
 
   const token = sign({ kind: "confirm", id: signupId }, 7 * 24 * 3600);
   const m = confirmEmail(`${config.siteUrl}/api/confirmar?token=${token}`);

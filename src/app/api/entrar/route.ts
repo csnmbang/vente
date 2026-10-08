@@ -4,6 +4,7 @@ import { z } from "zod";
 import { config, EMAIL_ENABLED } from "@/lib/config";
 import { sign, verify } from "@/lib/crypto";
 import { loginEmail, sendEmail } from "@/lib/email";
+import { refrescarMapa } from "@/lib/mapa-cache";
 import { unlockMap } from "@/lib/quiz";
 import { fail, json } from "@/lib/request";
 import { store, type Signup } from "@/lib/store";
@@ -44,7 +45,10 @@ export async function GET(req: NextRequest) {
   const signup = t ? await store().getSignup(t.id) : null;
   if (!signup) redirect("/entrar?caducado=1");
   // Clicking a link sent to the address proves it's theirs.
-  if (!signup.confirmed_at) await store().confirmSignup(signup.id);
+  if (!signup.confirmed_at) {
+    await store().confirmSignup(signup.id);
+    refrescarMapa();
+  }
   await entrar(signup);
   redirect("/mapa");
 }

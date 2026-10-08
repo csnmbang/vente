@@ -66,7 +66,7 @@ export default function WorldMap() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setYo(readYo());
     const params = new URLSearchParams(window.location.search);
-    if (params.has("bienvenida")) setBanner("Correo confirmado. Tu punto aparecerá en el mapa en unos minutos.");
+    if (params.has("bienvenida")) setBanner("Correo confirmado. Tu punto aparecerá en el mapa en unos instantes.");
     else if (params.has("confirmacion"))
       setBanner("El enlace ha caducado. Repite el test para apuntarte.");
   }, []);
@@ -289,9 +289,24 @@ export default function WorldMap() {
           ) : (
             <p>Cada punto es una ciudad. Acerca el mapa para ver los códigos postales.</p>
           )}
+          <EnlacesPie />
         </div>
       </div>
     </main>
+  );
+}
+
+/** Way out of the map: back home or to the privacy page. */
+function EnlacesPie() {
+  return (
+    <nav className="flex justify-center gap-4 border-t border-tinta/10 pt-2 text-sm text-gris">
+      <Link href="/" className="underline">
+        Inicio
+      </Link>
+      <Link href="/privacidad" className="underline">
+        Privacidad
+      </Link>
+    </nav>
   );
 }
 
@@ -318,6 +333,7 @@ function Candado({ locked }: { locked: LockedMap }) {
         <Link href="/entrar" className="mt-3 block text-center text-sm font-bold underline">
           Ya estoy apuntado
         </Link>
+        <EnlacesPie />
       </div>
     </div>
   );

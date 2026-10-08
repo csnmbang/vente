@@ -16,6 +16,8 @@ type Phase =
   | { kind: "intro" }
   | { kind: "loading" }
   | { kind: "question"; q: Question }
+  // Tapped, waiting for the server: show the choice straight away.
+  | { kind: "checking"; q: Question; picked: number | null }
   | { kind: "feedback"; q: Question; picked: number | null; correct: boolean }
   | { kind: "error"; message: string; contacto?: boolean };
 
@@ -41,6 +43,7 @@ export default function Quiz() {
     async (q: Question, choice: number | null) => {
       if (sending.current) return;
       sending.current = true;
+      setPhase({ kind: "checking", q, picked: choice });
       try {
         const res = await fetch("/api/quiz/answer", {
           method: "POST",
@@ -111,12 +114,12 @@ function QuestionCard({
   score,
   onAnswer,
 }: {
-  phase: Extract<Phase, { kind: "question" | "feedback" }>;
+  phase: Extract<Phase, { kind: "question" | "checking" | "feedback" }>;
   score: number;
   onAnswer: (q: Question, choice: number | null) => void;
 }) {
   const { q } = phase;
-  const locked = phase.kind === "feedback";
+  const locked = phase.kind !== "question";
 
   // Out of time → send "no answer". The server checks the time anyway.
   useEffect(() => {
@@ -150,6 +153,7 @@ function QuestionCard({
       <div className="mt-4 grid gap-3">
         {q.options.map((opt, i) => {
           let style = "btn-blanco";
+          if (phase.kind === "checking" && phase.picked === i) style = "bg-amarillo";
           if (phase.kind === "feedback" && phase.picked === i) {
             style = phase.correct ? "bg-green-500 text-white" : "bg-rojo text-white";
           }

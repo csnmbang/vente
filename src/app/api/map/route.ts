@@ -1,4 +1,5 @@
-import { cacheLife } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
+import { MAPA_TAG } from "@/lib/mapa-cache";
 import { connection } from "next/server";
 import { DEMO } from "@/lib/config";
 import { mapUnlocked } from "@/lib/quiz";
@@ -37,6 +38,7 @@ export async function GET() {
 async function cachedMapData() {
   "use cache";
   cacheLife("minutes");
+  cacheTag(MAPA_TAG); // refreshed straight away when someone confirms or leaves
   return loadMapData();
 }
 

@@ -3,6 +3,7 @@ import { config, EMAIL_ENABLED } from "@/lib/config";
 import { sign, verify } from "@/lib/crypto";
 import { deleteEmail, sendEmail } from "@/lib/email";
 import { fail, json } from "@/lib/request";
+import { refrescarMapa } from "@/lib/mapa-cache";
 import { store } from "@/lib/store";
 
 const Body = z.union([
@@ -20,6 +21,7 @@ export async function POST(req: Request) {
     const t = verify<{ id: string }>(body.data.token, "delete");
     if (!t) return fail("El enlace ha caducado. Pide otro.", 410);
     await store().deleteSignup(t.id);
+    refrescarMapa();
     return json({ deleted: true });
   }
 
