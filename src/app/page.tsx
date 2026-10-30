@@ -91,7 +91,7 @@ async function Entrada() {
       <div className="card mt-8 bg-white p-5">
         <p className="font-display text-xl font-bold">¿Eres de aquí de verdad?</p>
         <p className="mt-1 text-gris">
-          Para que solo entren españoles, primero 5 preguntas rápidas. Tardas 25 segundos.
+          Para que solo entren españoles, primero 5 preguntas rápidas, con 10 segundos para cada una.
         </p>
         <Link href="/quiz" className="btn btn-rojo mt-5 w-full">
           Empezar el test

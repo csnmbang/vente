@@ -23,7 +23,7 @@ export const EMAIL_ENABLED = Boolean(config.resendKey);
 
 export const QUIZ = {
   questions: 5,
-  seconds: 5,
+  seconds: 10,
   graceMs: 2000, // network slack on mobile + the short feedback flash
   passMark: 4, // out of `questions`
   /** Tries that didn't pass (failed or abandoned). After this, people write to us. */
