@@ -229,11 +229,12 @@ export function supabaseStore(): Store {
         if (error) throw new Error(error.message);
         return (count as number) ?? 0;
       };
+      // Entry links from /admin are attempts with no questions: not tests.
       const [aT, aD, pT, pD, sT, sD, sC, recent] = await Promise.all([
-        count("quiz_attempts"),
-        count("quiz_attempts", (q) => q.gte("created_at", since)),
-        count("quiz_attempts", (q) => q.eq("status", "passed")),
-        count("quiz_attempts", (q) => q.eq("status", "passed").gte("created_at", since)),
+        count("quiz_attempts", (q) => q.neq("question_ids", "{}")),
+        count("quiz_attempts", (q) => q.neq("question_ids", "{}").gte("created_at", since)),
+        count("quiz_attempts", (q) => q.neq("question_ids", "{}").eq("status", "passed")),
+        count("quiz_attempts", (q) => q.neq("question_ids", "{}").eq("status", "passed").gte("created_at", since)),
         count("signups"),
         count("signups", (q) => q.gte("created_at", since)),
         count("signups", (q) => q.not("confirmed_at", "is", null)),

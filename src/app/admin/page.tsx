@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { PROVINCIAS } from "@/content/provincias";
 import { claveValida } from "@/lib/admin";
+import { config } from "@/lib/config";
 import { store } from "@/lib/store";
 
 export const metadata: Metadata = { title: "Admin · Vente", robots: { index: false, follow: false } };
@@ -32,7 +33,7 @@ const hora = (iso: string) =>
 
 async function Panel({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   await connection();
-  const { clave } = await searchParams;
+  const { clave, invitacion } = await searchParams;
   if (!claveValida(clave)) notFound();
 
   const [s, cities, reportados] = await Promise.all([
@@ -57,6 +58,26 @@ async function Panel({ searchParams }: { searchParams: Promise<Record<string, st
       <form method="post" action={`/api/admin/refrescar?clave=${encodeURIComponent(String(clave))}`} className="mt-3">
         <button className="btn btn-blanco min-h-0 w-full py-2 text-base">Actualizar el mapa</button>
       </form>
+
+      <section className="card mt-4 p-4">
+        <h2 className="font-display text-xl font-extrabold">Enlace de entrada</h2>
+        <p className="text-sm text-gris">
+          Para alguien que te escribe tras fallar el test. Entra sin test y se apunta una sola vez. Dura 7 días.
+        </p>
+        {typeof invitacion === "string" && (
+          <input
+            readOnly
+            value={`${config.siteUrl}/api/invitacion?token=${encodeURIComponent(invitacion)}`}
+            className="input mt-3 w-full text-sm"
+            aria-label="Enlace de entrada"
+          />
+        )}
+        <form method="post" action={`/api/admin/invitar?clave=${encodeURIComponent(String(clave))}`} className="mt-3">
+          <button className="btn btn-rojo min-h-0 w-full py-2 text-base">
+            {typeof invitacion === "string" ? "Crear otro enlace" : "Crear enlace de entrada"}
+          </button>
+        </form>
+      </section>
 
       <div className="mt-6 grid grid-cols-2 gap-3">
         <Dato titulo="Tests (24 h)" valor={s.attempts.day} detalle={`${s.attempts.passedDay} aprobados`} />

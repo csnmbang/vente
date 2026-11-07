@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { DEMO, EMAIL_ENABLED, QUIZ } from "@/lib/config";
 import { verify } from "@/lib/crypto";
-import { chancesUsed, CONTACT_EMAIL, PASS_COOKIE, questionText, QUIZ_COOKIE } from "@/lib/quiz";
+import { chancesUsed, CONTACT_EMAIL, esInvitacion, PASS_COOKIE, questionText, QUIZ_COOKIE } from "@/lib/quiz";
 import { store } from "@/lib/store";
 import { verdict } from "@/lib/verdict";
 import ShareButton from "./ShareButton";
@@ -19,7 +19,7 @@ export async function generateMetadata({
 }: PageProps<"/resultado/[id]">): Promise<Metadata> {
   const { id } = await params;
   const attempt = UUID.test(id) ? await store().getAttempt(id) : null;
-  if (!attempt || attempt.status === "in_progress") return { title: "Vente" };
+  if (!attempt || attempt.status === "in_progress" || esInvitacion(attempt)) return { title: "Vente" };
   const title = `He sacado ${attempt.correct_count}/${attempt.question_ids.length} en Vente`;
   return {
     title,
@@ -49,6 +49,35 @@ async function Result({ params }: { params: Promise<{ id: string }> }) {
   const isOwner = verify<{ id: string }>(jar.get(QUIZ_COOKIE)?.value, "quiz")?.id === id;
   const pass = verify<{ id: string }>(jar.get(PASS_COOKIE)?.value, "pass");
   const canSignUp = isOwner && attempt.status === "passed" && !attempt.signup_used && pass?.id === id;
+
+  // Entry link from /admin: no score to show, only the sign-up.
+  if (esInvitacion(attempt)) {
+    if (!isOwner) notFound();
+    return (
+      <>
+        <p className="font-display text-xl font-extrabold text-rojo">Vente</p>
+        {canSignUp ? (
+          <section className="card mt-6 p-5">
+            <h1 className="font-display text-2xl font-extrabold">Te damos la bienvenida</h1>
+            <p className="mt-1 text-gris">
+              Escribe tu correo para ver el mapa y aparecer en él. Guardamos tu correo, tu ciudad, tu zona de código postal si la pones y tu pueblo.
+              Nunca tu dirección.
+            </p>
+            <SignupForm emailEnabled={EMAIL_ENABLED} demo={DEMO} />
+          </section>
+        ) : (
+          <p className="mt-6 rounded-xl bg-amarillo p-4 font-bold">
+            {attempt.signup_used
+              ? "Ya te apuntaste con este enlace."
+              : "Han pasado más de 30 minutos. Vuelve a abrir el enlace que te mandamos."}
+          </p>
+        )}
+        <Link href="/mapa" className="btn btn-blanco mt-4 w-full">
+          Ver el mapa
+        </Link>
+      </>
+    );
+  }
 
   const score = attempt.correct_count;
   const total = attempt.question_ids.length;

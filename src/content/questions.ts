@@ -3,15 +3,17 @@ import "server-only";
 /**
  * Vente quiz questions. EDIT FREELY.
  *
- * The aim: a Spaniard answers in under 5 seconds without thinking; someone
- * who didn't grow up in Spain needs to look it up.
+ * The aim: a Spaniard answers in a few seconds without thinking; someone
+ * who didn't grow up in Spain needs to look it up. Avoid things only one
+ * region or one generation knows: real Spaniards failed those (bocata de
+ * calamares, hacer novillos, Calleja, Saber y ganar, Kojak, Los Simpson).
  *
  * Rules:
  * - `id` must be unique and should never change once live (results pages
  *   refer to questions by id). To retire a question, delete it.
  * - 2–4 `options`. `answer` is the exact text of the correct option.
  *   Option order is shuffled for each player, so write them in any order.
- * - Keep questions short: people have 5 seconds on a phone.
+ * - Keep questions short: people have 10 seconds on a phone.
  *
  * This file is server-only: the answers never reach the browser.
  */
@@ -26,25 +28,11 @@ export type Question = {
 
 export const QUESTIONS: Question[] = [
   {
-    id: "mas-cuento-que",
-    category: "refranes",
-    question: "Tienes más cuento que…",
-    options: ["Calleja", "Cervantes", "Pinocho", "Lola Flores"],
-    answer: "Calleja",
-  },
-  {
     id: "cuadernos-verano",
     category: "cole",
     question: "Los cuadernillos de cuentas y caligrafía del verano eran los…",
     options: ["Rubio", "Anaya", "Santillana", "Milan"],
     answer: "Rubio",
-  },
-  {
-    id: "bocata-calamares",
-    category: "comida",
-    question: "El bocata de calamares es típico de…",
-    options: ["Madrid", "Sevilla", "Bilbao", "Valencia"],
-    answer: "Madrid",
   },
   {
     id: "quien-madruga",
@@ -80,13 +68,6 @@ export const QUESTIONS: Question[] = [
     answer: "Los números de la Lotería de Navidad",
   },
   {
-    id: "saber-y-ganar",
-    category: "tele",
-    question: "¿Quién lleva media vida presentando «Saber y ganar»?",
-    options: ["Jordi Hurtado", "Carlos Sobera", "Matías Prats", "Arturo Valls"],
-    answer: "Jordi Hurtado",
-  },
-  {
     id: "no-hay-mal",
     category: "refranes",
     question: "No hay mal que por bien…",
@@ -111,27 +92,6 @@ export const QUESTIONS: Question[] = [
     question: "Las campanadas de la tele salen desde…",
     options: ["La Puerta del Sol", "La Plaza Mayor", "Cibeles", "La Plaza de España"],
     answer: "La Puerta del Sol",
-  },
-  {
-    id: "hacer-novillos",
-    category: "cole",
-    question: "«Hacer novillos» es…",
-    options: ["Faltar a clase", "Ir a los toros", "Hacer los deberes", "Ligar"],
-    answer: "Faltar a clase",
-  },
-  {
-    id: "simpson-hora",
-    category: "tele",
-    question: "¿A qué hora ponían Los Simpson en Antena 3?",
-    options: ["A las 12h", "A las 13h", "A las 14h", "A las 15h"],
-    answer: "A las 14h",
-  },
-  {
-    id: "kojak",
-    category: "comida",
-    question: "Un Kojak era…",
-    options: ["Un chupa-chups con chicle dentro", "Un helado de palo", "Un chicle de fresa", "Un bollo de chocolate"],
-    answer: "Un chupa-chups con chicle dentro",
   },
   {
     id: "fistro-pecador",

@@ -12,7 +12,7 @@ export const contentType = "image/png";
 export default async function Image({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const attempt = /^[0-9a-f-]{36}$/i.test(id) ? await store().getAttempt(id) : null;
-  const score = attempt && attempt.status !== "in_progress" ? attempt.correct_count : null;
+  const score = attempt && attempt.status !== "in_progress" && attempt.question_ids.length > 0 ? attempt.correct_count : null;
   const total = attempt?.question_ids.length ?? 5;
   const v = score === null ? null : verdict(score, total);
 

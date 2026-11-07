@@ -86,6 +86,11 @@ traffic is mobile, arriving from a link in a TikTok bio.
    ("Hay 198 españoles en 24 ciudades"); `/api/map` never sends details
    without the cookie. Two tries per person (`QUIZ.maxChances`), counted by
    hashed connection and a browser cookie; after that, write to hola@.
+   The owner can then send an **entry link** from `/admin` (signed, 7 days,
+   one sign-up): a passed attempt with no questions, so it isn't counted
+   as a test. Questions must be known all over Spain and by every age:
+   regional or generational ones made real Spaniards fail (35 % pass rate
+   until 7 Nov 2026).
    No individual people. Zoomed out: one dot per city, sized
    by count. Zoomed in: one dot per postcode area (shown even with 1 person),
    coloured from light red (1) to very dark red (100+).

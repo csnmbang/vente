@@ -360,7 +360,7 @@ export function memoryStore(): Store & {
     },
 
     async adminStats(since): Promise<AdminStats> {
-      const at = [...state().attempts.values()];
+      const at = [...state().attempts.values()].filter((a) => a.question_ids.length > 0);
       const su = [...state().signups.values()];
       return {
         attempts: {

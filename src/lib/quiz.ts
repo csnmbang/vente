@@ -10,8 +10,12 @@ import type { Attempt } from "./store";
 
 export const QUIZ_COOKIE = "vente_quiz";
 export const PASS_COOKIE = "vente_pass";
-/** Tries used in this browser that didn't pass. Backs up the per-connection count. */
-export const CHANCES_COOKIE = "vente_intentos";
+/**
+ * Tries used in this browser that didn't pass. Backs up the per-connection count.
+ * Renamed from "vente_intentos" on 7 Nov 2026 to give everyone their 2 tries back
+ * after the question clean-up.
+ */
+export const CHANCES_COOKIE = "vente_intentos2";
 /** Set when someone leaves their email after passing: the map stays open for a year. */
 export const MAP_COOKIE = "vente_mapa";
 const MAP_MAX_AGE = 365 * 24 * 3600;
@@ -29,6 +33,12 @@ export async function unlockMap() {
 export async function mapUnlocked(): Promise<boolean> {
   return verify((await cookies()).get(MAP_COOKIE)?.value, "mapa") !== null;
 }
+
+/** Owner-made entry link (from /admin): lets someone sign up without the test. */
+export const INVITE_DAYS = 7;
+
+/** Entries made by hand from /admin have no questions. */
+export const esInvitacion = (a: Attempt) => a.question_ids.length === 0;
 
 export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hola@vengavente.com";
 
