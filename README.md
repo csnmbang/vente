@@ -1,6 +1,6 @@
 # Vente · Vente pa'cá
 
-The map of Spaniards living abroad. Pass a 10-question quiz about growing up in
+The map of Spaniards living abroad. Pass a 5-question quiz about growing up in
 Spain, put yourself on the map. See `CLAUDE.md` for scope and constraints.
 
 ## Run it locally (no accounts needed)
