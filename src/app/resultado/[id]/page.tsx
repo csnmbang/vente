@@ -6,9 +6,10 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { DEMO, EMAIL_ENABLED, QUIZ } from "@/lib/config";
 import { verify } from "@/lib/crypto";
-import { chancesUsed, CONTACT_EMAIL, esInvitacion, PASS_COOKIE, questionText, QUIZ_COOKIE } from "@/lib/quiz";
+import { chancesUsed, esInvitacion, PASS_COOKIE, questionText, QUIZ_COOKIE } from "@/lib/quiz";
 import { store } from "@/lib/store";
 import { verdict } from "@/lib/verdict";
+import PedirEnlace from "@/app/quiz/PedirEnlace";
 import ShareButton from "./ShareButton";
 import SignupForm from "./SignupForm";
 
@@ -145,16 +146,14 @@ async function Result({ params }: { params: Promise<{ id: string }> }) {
             Necesitas {QUIZ.passMark} de {QUIZ.questions} aciertos para apuntarte.{" "}
             {quedan > 0
               ? `Te queda ${quedan} ${quedan === 1 ? "intento" : "intentos"}.`
-              : "Ya has usado tus intentos. Si eres de aquí y crees que es un error, escríbenos."}
+              : "Ya has usado tus intentos."}
           </p>
           {quedan > 0 ? (
             <Link href="/quiz" className="btn btn-rojo mt-4 w-full">
               Repetir el test
             </Link>
           ) : (
-            <a href={`mailto:${CONTACT_EMAIL}?subject=Vente%3A%20el%20test`} className="btn btn-rojo mt-4 w-full">
-              Escribir a {CONTACT_EMAIL}
-            </a>
+            <PedirEnlace />
           )}
         </div>
       )}

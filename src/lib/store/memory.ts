@@ -4,7 +4,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { haversineKm, normalizeText } from "../geo";
 import type {
-  AdminStats, Attempt, ChatMessage, CityCount, CityProvinceCount, ReportedMessage, Place, Postcode, Signup, Store, ZoneCount,
+  AdminStats, Attempt, ChatMessage, CityCount, CityProvinceCount, ReportedMessage, Place, Postcode, Signup, Solicitud, Store, ZoneCount,
 } from "./types";
 
 /**
@@ -21,6 +21,7 @@ type DemoState = {
   messages: { id: number; city_id: number; signup_id: string; body: string; created_at: string; hidden_at: string | null }[];
   reports: { message_id: number; reporter_id: string }[];
   emailSends: { ip_hash: string; email_hash: string; created_at: string }[];
+  solicitudes: Solicitud[];
 };
 
 const g = globalThis as unknown as { __venteDemo?: DemoState };
@@ -153,7 +154,7 @@ function seedChat(state: DemoState) {
 function state(): DemoState {
   if (!g.__venteDemo) {
     g.__venteDemo = {
-      places: loadPlaces(), postcodes: new Map(), attempts: new Map(), signups: new Map(), messages: [], reports: [], emailSends: [],
+      places: loadPlaces(), postcodes: new Map(), attempts: new Map(), signups: new Map(), messages: [], reports: [], emailSends: [], solicitudes: [],
     };
     seed(g.__venteDemo);
     seedChat(g.__venteDemo);
@@ -357,6 +358,30 @@ export function memoryStore(): Store & {
 
     async recordEmailSend(ipHash, emailHash) {
       state().emailSends.push({ ip_hash: ipHash, email_hash: emailHash, created_at: new Date().toISOString() });
+    },
+
+    async addSolicitud(email) {
+      const all = state().solicitudes;
+      if (all.some((s) => s.email === email)) return;
+      all.unshift({ id: randomUUID(), email, created_at: new Date().toISOString(), sent_at: null });
+    },
+
+    async solicitudes() {
+      return [...state().solicitudes];
+    },
+
+    async getSolicitud(id) {
+      return state().solicitudes.find((s) => s.id === id) ?? null;
+    },
+
+    async markSolicitudSent(id) {
+      const s = state().solicitudes.find((x) => x.id === id);
+      if (s) s.sent_at = new Date().toISOString();
+    },
+
+    async deleteSolicitud(by) {
+      const st = state();
+      st.solicitudes = st.solicitudes.filter((s) => ("id" in by ? s.id !== by.id : s.email !== by.email));
     },
 
     async adminStats(since): Promise<AdminStats> {

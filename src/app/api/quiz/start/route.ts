@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { QUIZ } from "@/lib/config";
 import { sign } from "@/lib/crypto";
-import { chancesUsed, CHANCES_COOKIE, CONTACT_EMAIL, drawQuiz, publicQuestion, QUIZ_COOKIE } from "@/lib/quiz";
+import { chancesUsed, CHANCES_COOKIE, drawQuiz, publicQuestion, QUIZ_COOKIE } from "@/lib/quiz";
 import { clientIpHash, fail, json } from "@/lib/request";
 import { store } from "@/lib/store";
 
@@ -9,10 +9,7 @@ export async function POST() {
   const ipHash = await clientIpHash();
   const used = await chancesUsed();
   if (used >= QUIZ.maxChances) {
-    return fail(
-      `Ya has usado tus ${QUIZ.maxChances} intentos. Si eres de aquí y crees que es un error, escríbenos a ${CONTACT_EMAIL}.`,
-      429,
-    );
+    return fail(`Ya has usado tus ${QUIZ.maxChances} intentos.`, 429);
   }
 
   const attempt = await store().createAttempt({

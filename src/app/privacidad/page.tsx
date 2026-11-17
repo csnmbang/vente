@@ -64,7 +64,8 @@ export default function PrivacyPage() {
           compartes. Para frenar trampas y spam guardamos también una huella cifrada de tu
           conexión (no tu IP), que borramos a los 7 días. Cuando pides un enlace por correo (para entrar o
           para borrar tus datos), guardamos durante 2 días una huella cifrada de tu conexión y de tu
-          correo, para evitar abusos.
+          correo, para evitar abusos. Si no te sale el test y nos dejas tu correo para pedir un enlace
+          de entrada, lo guardamos hasta que te apuntes o como mucho 30 días.
         </p>
       </Section>
 

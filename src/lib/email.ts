@@ -69,3 +69,14 @@ export function loginEmail(link: string) {
     text: `Para entrar en Vente, abre este enlace (caduca en 24 h): ${link}`,
   };
 }
+
+export function invitacionEmail(link: string) {
+  return {
+    subject: "Tu enlace para entrar en Vente",
+    html: layout(`
+      <p>Nos pediste entrar en Vente después de que no te saliera el test. Con este enlace entras sin repetirlo.</p>
+      ${button(link, "Entrar en Vente")}
+      <p style="font-size:14px;color:#6f6676">Ábrelo desde el móvil. Funciona durante 7 días y sirve para una persona.</p>`),
+    text: `Nos pediste entrar en Vente después de que no te saliera el test. Con este enlace entras sin repetirlo (funciona durante 7 días): ${link}`,
+  };
+}

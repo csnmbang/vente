@@ -33,14 +33,17 @@ const hora = (iso: string) =>
 
 async function Panel({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   await connection();
-  const { clave, invitacion } = await searchParams;
+  const { clave, invitacion, enviado } = await searchParams;
   if (!claveValida(clave)) notFound();
 
-  const [s, cities, reportados] = await Promise.all([
+  const [s, cities, reportados, solicitudes] = await Promise.all([
     store().adminStats(hace24h()),
     store().cityCounts(),
     store().reportedMessages(),
+    // Empty until migration 0005 is run.
+    store().solicitudes().catch(() => []),
   ]);
+  const solicitud = `/api/admin/solicitud?clave=${encodeURIComponent(String(clave))}`;
   const moderar = `/api/admin/moderar?clave=${encodeURIComponent(String(clave))}`;
   const places = new Map(
     (await Promise.all(
@@ -59,10 +62,36 @@ async function Panel({ searchParams }: { searchParams: Promise<Record<string, st
         <button className="btn btn-blanco min-h-0 w-full py-2 text-base">Actualizar el mapa</button>
       </form>
 
+      <h2 className="mt-6 font-display text-xl font-extrabold">
+        Piden entrar {solicitudes.length > 0 && `(${solicitudes.length})`}
+      </h2>
+      <p className="text-sm text-gris">Gente que ha fallado los 2 intentos y ha dejado su correo.</p>
+      {enviado === "1" && <p className="mt-2 rounded-xl bg-amarillo p-3 font-bold">Enlace enviado.</p>}
+      <ul className="mt-2 divide-y divide-tinta/10 rounded-xl border-2 border-tinta bg-white">
+        {solicitudes.length === 0 && <li className="p-3 text-gris">Nadie por ahora.</li>}
+        {solicitudes.map((r) => (
+          <li key={r.id} className="p-3 text-sm">
+            <strong className="break-all">{r.email}</strong>
+            <span className="block text-gris">
+              {hora(r.created_at)} · {r.sent_at ? `enlace enviado el ${hora(r.sent_at)}` : "sin enlace"}
+            </span>
+            <form method="post" action={solicitud} className="mt-2 flex gap-2">
+              <input type="hidden" name="id" value={r.id} />
+              <button name="accion" value="enviar" className="btn btn-rojo min-h-0 flex-1 py-1 text-sm">
+                {r.sent_at ? "Mandar otro enlace" : "Mandar enlace"}
+              </button>
+              <button name="accion" value="descartar" className="btn btn-blanco min-h-0 flex-1 py-1 text-sm">
+                Descartar
+              </button>
+            </form>
+          </li>
+        ))}
+      </ul>
+
       <section className="card mt-4 p-4">
         <h2 className="font-display text-xl font-extrabold">Enlace de entrada</h2>
         <p className="text-sm text-gris">
-          Para alguien que te escribe tras fallar el test. Entra sin test y se apunta una sola vez. Dura 7 días.
+          Para mandar a mano, por ejemplo a quien te escribe a hola@. Entra sin test y se apunta una sola vez. Dura 7 días.
         </p>
         {typeof invitacion === "string" && (
           <input

@@ -84,6 +84,8 @@ export async function POST(req: Request) {
       confirmed_at: EMAIL_ENABLED ? null : new Date().toISOString(),
     });
     signupId = signup.id;
+    // They're in: an entry request from the same email is no longer needed.
+    await store().deleteSolicitud({ email }).catch(() => {});
   } catch (e) {
     await store().releaseAttemptClaim(pass.id);
     throw e;

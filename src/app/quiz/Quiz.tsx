@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import PedirEnlace from "./PedirEnlace";
 
 type Question = {
   index: number;
@@ -39,7 +40,7 @@ export default function Quiz({ passMark, seconds }: { passMark: number; seconds:
     const res = await fetch("/api/quiz/start", { method: "POST" });
     const data = await res.json();
     setLoading(false);
-    // 429 = no tries left: offer to write to us.
+    // 429 = no tries left: offer to ask for an entry link.
     if (!res.ok) return setPhase({ kind: "error", message: data.error, contacto: res.status === 429 });
     setScore(0);
     setPhase({ kind: "question", q: data.question });
@@ -117,11 +118,7 @@ export default function Quiz({ passMark, seconds }: { passMark: number; seconds:
     return (
       <div className="card p-6 text-center">
         <p className="text-lg font-bold">{phase.message}</p>
-        {phase.contacto && (
-          <a href="mailto:hola@vengavente.com?subject=Vente%3A%20el%20test" className="btn btn-rojo mt-6 w-full">
-            Escribir a hola@vengavente.com
-          </a>
-        )}
+        {phase.contacto && <PedirEnlace />}
         <Link href="/" className="btn btn-blanco mt-4 w-full">
           Volver al inicio
         </Link>

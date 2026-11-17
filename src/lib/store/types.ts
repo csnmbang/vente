@@ -98,6 +98,9 @@ export type ZoneCount = {
   people: number;
 };
 
+/** Someone who used up their tries and asked for an entry link. */
+export type Solicitud = { id: string; email: string; created_at: string; sent_at: string | null };
+
 export type AdminStats = {
   attempts: { total: number; day: number; passedTotal: number; passedDay: number };
   signups: { total: number; day: number; confirmed: number };
@@ -149,6 +152,14 @@ export interface Store {
   // email limits ("Ya estoy apuntado", "Borrar mis datos")
   countEmailSends(by: { ipHash: string } | { emailHash: string }, sinceIso: string): Promise<number>;
   recordEmailSend(ipHash: string, emailHash: string): Promise<void>;
+
+  // entry requests from people who failed the test
+  /** Ignores an email that's already waiting. */
+  addSolicitud(email: string): Promise<void>;
+  solicitudes(): Promise<Solicitud[]>;
+  getSolicitud(id: string): Promise<Solicitud | null>;
+  markSolicitudSent(id: string): Promise<void>;
+  deleteSolicitud(by: { id: string } | { email: string }): Promise<void>;
 
   // admin
   adminStats(sinceIso: string): Promise<AdminStats>;

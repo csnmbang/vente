@@ -2,7 +2,7 @@ import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import { config } from "../config";
 import { haversineKm } from "../geo";
-import type { AdminStats, Attempt, ChatMessage, CityCount, ReportedMessage, CityProvinceCount, Place, Signup, Store, ZoneCount } from "./types";
+import type { AdminStats, Attempt, ChatMessage, CityCount, ReportedMessage, CityProvinceCount, Place, Signup, Solicitud, Store, ZoneCount } from "./types";
 
 const PLACE_COLS =
   "id,name,country_code,admin1_name,admin2_name,lat,lng,population,is_abroad,is_es_municipio";
@@ -221,6 +221,27 @@ export function supabaseStore(): Store {
 
     async recordEmailSend(ipHash, emailHash) {
       must(await db.from("email_sends").insert({ ip_hash: ipHash, email_hash: emailHash }));
+    },
+
+    async addSolicitud(email) {
+      must(await db.from("solicitudes").upsert({ email }, { onConflict: "email", ignoreDuplicates: true }));
+    },
+
+    async solicitudes() {
+      return must(await db.from("solicitudes").select("*").order("created_at", { ascending: false })) as Solicitud[];
+    },
+
+    async getSolicitud(id) {
+      return must(await db.from("solicitudes").select("*").eq("id", id).maybeSingle()) as Solicitud | null;
+    },
+
+    async markSolicitudSent(id) {
+      must(await db.from("solicitudes").update({ sent_at: new Date().toISOString() }).eq("id", id));
+    },
+
+    async deleteSolicitud(by) {
+      const q = db.from("solicitudes").delete();
+      must(await ("id" in by ? q.eq("id", by.id) : q.eq("email", by.email)));
     },
 
     async adminStats(since) {
