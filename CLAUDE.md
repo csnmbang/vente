@@ -72,7 +72,9 @@ traffic is mobile, arriving from a link in a TikTok bio.
 1. **Quiz** — 5 random questions from `src/content/questions.ts`, 10 s each,
    multiple choice. Server-only scoring: questions are served one at a time
    with no answer, and the time limit is checked on the server. Pass mark is
-   **4/5** (`QUIZ` in `src/lib/config.ts`). Attempts are rate-limited per hashed IP.
+   **3/5** (`QUIZ` in `src/lib/config.ts`; was 4/5 until 17 Nov 2026, when
+   real Spaniards kept landing on 3/5). A practice question that doesn't
+   count comes first, answered in the browser. Attempts are rate-limited per hashed IP.
 2. **Result screen** — made to screenshot and share ("He sacado 4/5 en
    Vente"). Shows which questions you missed, but never the correct answers.
 3. **Sign-up** (only after passing, via a single-use signed cookie): email,

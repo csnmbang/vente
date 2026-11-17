@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { QUIZ } from "@/lib/config";
 import Quiz from "./Quiz";
 
 export const metadata: Metadata = { title: "El test · Vente" };
@@ -11,7 +12,7 @@ export default function QuizPage() {
         Vente
       </Link>
       <div className="mt-6">
-        <Quiz />
+        <Quiz passMark={QUIZ.passMark} seconds={QUIZ.seconds} />
       </div>
     </main>
   );
