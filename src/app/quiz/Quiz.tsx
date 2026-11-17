@@ -21,7 +21,7 @@ type Phase =
   // Tapped, waiting for the server: show the choice straight away.
   | { kind: "checking"; q: Question; picked: number | null }
   | { kind: "feedback"; q: Question; picked: number | null; correct: boolean }
-  | { kind: "error"; message: string; contacto?: boolean };
+  | { kind: "error"; message: string; contacto?: boolean; reintentar?: boolean };
 
 const FEEDBACK_MS = 400;
 
@@ -37,13 +37,19 @@ export default function Quiz({ passMark, seconds }: { passMark: number; seconds:
 
   async function start() {
     setLoading(true);
-    const res = await fetch("/api/quiz/start", { method: "POST" });
-    const data = await res.json();
-    setLoading(false);
-    // 429 = no tries left: offer to ask for an entry link.
-    if (!res.ok) return setPhase({ kind: "error", message: data.error, contacto: res.status === 429 });
-    setScore(0);
-    setPhase({ kind: "question", q: data.question });
+    try {
+      const res = await fetch("/api/quiz/start", { method: "POST" });
+      const data = await res.json();
+      // 429 = no tries left: offer to ask for an entry link.
+      if (!res.ok) return setPhase({ kind: "error", message: data.error, contacto: res.status === 429 });
+      setScore(0);
+      setPhase({ kind: "question", q: data.question });
+    } catch {
+      // Never leave the button stuck on "Preparando…".
+      setPhase({ kind: "error", message: "No se ha podido empezar el test. Vuelve a intentarlo.", reintentar: true });
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Stable, so the practice timer doesn't restart on re-renders.
@@ -119,6 +125,11 @@ export default function Quiz({ passMark, seconds }: { passMark: number; seconds:
       <div className="card p-6 text-center">
         <p className="text-lg font-bold">{phase.message}</p>
         {phase.contacto && <PedirEnlace />}
+        {phase.reintentar && (
+          <button onClick={start} disabled={loading} className="btn btn-rojo mt-6 w-full">
+            {loading ? "Preparando…" : "Volver a intentarlo"}
+          </button>
+        )}
         <Link href="/" className="btn btn-blanco mt-4 w-full">
           Volver al inicio
         </Link>

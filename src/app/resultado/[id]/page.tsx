@@ -149,9 +149,10 @@ async function Result({ params }: { params: Promise<{ id: string }> }) {
               : "Ya has usado tus intentos."}
           </p>
           {quedan > 0 ? (
-            <Link href="/quiz" className="btn btn-rojo mt-4 w-full">
+            // A full page load, so the new try starts from a clean slate.
+            <a href="/quiz" className="btn btn-rojo mt-4 w-full">
               Repetir el test
-            </Link>
+            </a>
           ) : (
             <PedirEnlace />
           )}
